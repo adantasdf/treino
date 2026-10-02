@@ -30,7 +30,7 @@ DIAS_SEMANA_MAP = {
 
 dia_semana_nome = DIAS_SEMANA_MAP.get(agora_br.weekday(), "Treino - Segunda-feira")
 
-# --- CSS CLEAN LIGHT THEME (CONFORTAVEL E ESTAVEL) ---
+# --- CSS CLEAN LIGHT THEME ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap');
@@ -144,10 +144,9 @@ st.markdown("""
         background: #dbeafe;
         color: #1d4ed8;
     }
-
     .table-header {
         display: grid;
-        grid-template-columns: 36px 1fr 65px 65px 38px;
+        grid-template-columns: 36px 1fr 65px 65px 44px;
         gap: 6px;
         font-size: 0.72rem;
         font-weight: 700;
@@ -168,7 +167,7 @@ st.markdown("""
         border-radius: 8px;
         display: flex;
         align-items: center;
-        justify-content: center;
+        *ustify-content: center;
         height: 38px;
     }
 
@@ -193,8 +192,9 @@ st.markdown("""
         display: none !important;
     }
 
-    div[data-testid="column"] button {
-        background-color: #f1f5f9 !important;
+    /* Botães padrão (Descanso e Feito Inativo) */
+    div[data-testid="column"] button[kind="secondary"] {
+        background-color: #f1f5f9!important;
         border: 1px solid #cbd5e1 !important;
         border-radius: 8px !important;
         color: #334155 !important;
@@ -210,25 +210,37 @@ st.markdown("""
         color: #0f172a !important;
     }
 
-    div[data-testid="stCheckbox"] {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 38px;
+    /* Botão FEITO ATIVO (Verde Vibrante) */
+    div[data-testid="column"] button[kind="primary"] {
+        background: #10b981 !important;
+        border: 1px solid #059669 !important;
+        border-radius: 8px !important;
+        color: #ffffff !important;
+        font-size: 0.95rem !important;
+        font-weight: 800 !important;
+        height: 38px !important;
+        padding: 0 !important;
+        width: 100% !important;
+        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35) !important;
+    }
+    div[data-testid="column"] button[kind="primary"]:hover {
+        background: #059669 !important;
     }
 
-    button[kind="primary"] {
+    /* Botão Finalizar Treino (Grande no final) */
+    .finish-btn button {
         background: #10b981 !important;
         border: none !important;
-        border-radius: 10px !important;
+        border-radius: 12px !important;
         color: #ffffff !important;
         font-weight: 700 !important;
         font-size: 1rem !important;
         min-height: 48px !important;
         box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
         cursor: pointer !important;
+        width: 100% !important;
     }
-    button[kind="primary"]:hover {
+    .finish-btn button:hover {
         background: #059669 !important;
     }
 </style>
@@ -263,13 +275,13 @@ init_db()
 
 USUARIO = "andre"
 
-# --- FICHAS ATUALIZADAS (FULL BODY COMPLETO) ---
+# --- FICHAS ATUALIZADAS (DESCANSO 90s ALTERADO PARA 60s) ---
 FICHAS = {
     "Treino - Segunda-feira": [
         ("Agachamento (Livre ou Smith)", 4, "8-10", 120),
-        ("Mesa Flexora", 4, "10-12", 90),
-        ("Supino Reto (Barra ou Halteres)", 4, "8-10", 90),
-        ("Puxada Alta no Pulley", 4, "8-10", 90),
+        ("Mesa Flexora", 4, "10-12", 60),
+        ("Supino Reto (Barra ou Halteres)", 4, "8-10", 60),
+        ("Puxada Alta no Pulley", 4, "8-10", 60),
         ("Elevação Lateral com Halteres", 4, "12-15", 60),
         ("Tríceps Pulley (Barra reta ou V)", 4, "10-12", 60),
         ("Rosca Direta com Barra", 4, "10-12", 60),
@@ -278,9 +290,9 @@ FICHAS = {
     ],
     "Treino - Terça-feira": [
         ("RDL ou Stiff", 4, "8-10", 120),
-        ("Leg Press 45°", 4, "10-12", 90),
-        ("Remada Curvada ou Remada Baixa", 4, "8-10", 90),
-        ("Crucifixo (Halteres ou Máquina)", 4, "10-12", 90),
+        ("Leg Press 45°", 4, "10-12", 60),
+        ("Remada Curvada ou Remada Baixa", 4, "8-10", 60),
+        ("Crucifixo (Halteres ou Máquina)", 4, "10-12", 60),
         ("Elevação Lateral na Polia (Cabo)", 4, "12-15", 60),
         ("Rosca Direta com Halteres", 4, "10-12", 60),
         ("Tríceps Corda na Polia", 4, "10-12", 60),
@@ -291,10 +303,10 @@ FICHAS = {
         ("Descanso Ativo / Caminhada / Mobilidade", 1, "30-45 min", 60),
     ],
     "Treino - Quinta-feira": [
-        ("Agachamento Hack ou Búlgaro", 4, "10-12", 90),
-        ("Cadeira Flexora", 4, "10-12", 90),
-        ("Supino Inclinado (Halteres ou Barra)", 4, "8-10", 90),
-        ("Remada Serrote com Halter", 4, "10-12", 90),
+        ("Agachamento Hack ou Búlgaro", 4, "10-12", 60),
+        ("Cadeira Flexora", 4, "10-12", 60),
+        ("Supino Inclinado (Halteres ou Barra)", 4, "8-10", 60),
+        ("Remada Serrote com Halter", 4, "10-12", 60),
         ("Elevação Lateral na Máquina", 4, "12-15", 60),
         ("Tríceps Pulley (Invertida ou V)", 4, "10-12", 60),
         ("Rosca Direta com Barra W", 4, "10-12", 60),
@@ -302,10 +314,10 @@ FICHAS = {
         ("Rosca Punho (Antebraço)", 3, "12-15", 60),
     ],
     "Treino - Sexta-feira": [
-        ("Mesa Flexora ou Flexora em Pé", 4, "10-12", 90),
-        ("Cadeira Extensora ou Agachamento Frontal", 4, "12-15", 90),
-        ("Puxada Pulley (Neutra ou Triângulo)", 4, "8-10", 90),
-        ("Supino Reto Halteres ou Crossover", 4, "10-12", 90),
+        ("Mesa Flexora ou Flexora em Pé", 4, "10-12", 60),
+        ("Cadeira Extensora ou Agachamento Frontal", 4, "12-15", 60),
+        ("Puxada Pulley (Neutra ou Triângulo)", 4, "8-10", 60),
+        ("Supino Reto Halteres ou Crossover", 4, "10-12", 60),
         ("Elevação Lateral com Pausa", 4, "12-15", 60),
         ("Rosca Direta no Cabo (Polia Baixa)", 4, "10-12", 60),
         ("Tríceps Corda com Abertura", 4, "10-12", 60),
@@ -389,20 +401,20 @@ for item in FICHAS[ficha_sel]:
         <div class="exercise-title">
             <span>{nome_ex}</span>
             <a href="{yt_url}" target="_blank" class="video-link">▶ Vídeo</a>
-        </div>
+       </div>
         <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">Meta: {num_series} séries &bull; {alvo_reps} reps &bull; ⏱️ {descanso_seg}s</div>
         <div class="table-header">
             <div>SET</div>
             <div>DESCANSO</div>
             <div>KG</div>
             <div>REPS</div>
-            <div>✓</div>
+            <div>STATUS</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
     for s in range(1, num_series + 1):
-        col_set, col_desc, col_kg, col_reps, col_chk = st.columns([1, 2.4, 1.8, 1.8, 1.2])
+        col_set, col_desc, col_kg, col_reps, col_done = st.columns([1, 2.4, 1.8, 1.8, 1.3])
         
         with col_set:
             st.markdown(f"<div class='set-badge'>{s}</div>", unsafe_allow_html=True)
@@ -421,16 +433,28 @@ for item in FICHAS[ficha_sel]:
             reps_padrao = int(ultimo[1]) if ultimo else 10
             reps_val = st.number_input("reps", min_value=1, max_value=100, value=reps_padrao, step=1, key=f"rep_{nome_ex}_{s}")
             
-        with col_chk:
-            feito = st.checkbox("", key=f"chk_{nome_ex}_{s}")
+        with col_done:
+            done_key = f"done_{nome_ex}_{s}"
+            is_done = st.session_state.get(done_key, False)
+            btn_label = "✓" if is_done else "—"
+            btn_type = "primary" if is_done else "secondary"
             
-        dados_sessao.append((USUARIO, data_sel, ficha_sel, nome_ex, s, carga_val, reps_val, 1 if feito else 0))
+            if st.button(btn_label, key=f"btn_done_{nome_ex}_{s}", type=btn_type):
+                novo_estado = not is_done
+                st.session_state[done_key] = novo_estado
+                if novo_estado:
+                    # Inicia automaticamente o descanso da série ao concluir!
+                    st.session_state["rest_target"] = time.time() + descanso_seg
+                st.rerun()
+            
+        dados_sessao.append((USUARIO, data_sel, ficha_sel, nome_ex, s, carga_val, reps_val, 1 if is_done else 0))
 
 conn.close()
 
 # Botao Finalizar Treino
+st.markdown('<div class="finish-btn">', unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
-if st.button("✓ FINALIZAR TREINO", type="primary", use_container_width=True):
+if st.button("✓ FINALIZAR TREINO", key="finish_all"):
     conn = get_connection()
     c = conn.cursor()
     salvos = 0
@@ -448,3 +472,4 @@ if st.button("✓ FINALIZAR TREINO", type="primary", use_container_width=True):
         st.success(f"🔥 Treino salvo! {salvos} séries concluídas.")
     else:
         st.warning("Marque ao menos uma série como concluída (✓) antes de finalizar.")
+st.markdown('</div>', unsafe_allow_html=True)
