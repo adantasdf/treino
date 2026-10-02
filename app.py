@@ -33,7 +33,7 @@ dia_semana_nome = DIAS_SEMANA_MAP.get(agora_br.weekday(), "Treino - Segunda-feir
 # --- CSS CLEAN LIGHT THEME (CONFORTAVEL E ESTAVEL) ---
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap');
 
     html, body, [data-testid="stAppViewContainer"] {
         background-color: #f8fafc !important;
@@ -78,6 +78,38 @@ st.markdown("""
         color: #64748b;
         font-weight: 500;
         margin-top: 2px;
+    }
+
+    /* Banner Digital do Timer */
+    .timer-active-banner {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border: 2px solid #3b82f6;
+        border-radius: 16px;
+        padding: 16px;
+        text-align: center;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.16);
+    }
+    .timer-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #1d4ed8;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+    .timer-countdown {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #1e3a8a;
+        font-family: 'JetBrains Mono', monospace;
+        line-height: 1.1;
+        margin: 6px 0 4px 0;
+        letter-spacing: -1px;
+    }
+    .timer-footer {
+        font-size: 0.78rem;
+        color: #3b82f6;
+        font-weight: 600;
     }
 
     .exercise-card {
@@ -136,7 +168,7 @@ st.markdown("""
         border-radius: 8px;
         display: flex;
         align-items: center;
-        *ustify-content: center;
+        justify-content: center;
         height: 38px;
     }
 
@@ -152,7 +184,6 @@ st.markdown("""
         height: 38px !important;
         padding: 0 !important;
     }
-
     div[data-testid="column"] input:focus {
         background-color: #ffffff !important;
         border-color: #10b981 !important;
@@ -290,15 +321,25 @@ idx_padrao = lista_fichas.index(dia_semana_nome) if dia_semana_nome in lista_fic
 ficha_sel = st.sidebar.selectbox("Ficha Ativa", lista_fichas, index=idx_padrao)
 data_sel = st.sidebar.date_input("Data", value=agora_br.date()).strftime("%Y-%m-%d")
 
-# --- CONTADOR DE DESCANSO ATIVO ---
+# --- CONTADOR DE DESCANSO ATIVO COM FONTE GIGANTE ---
 if "rest_target" in st.session_state:
     restante = int(st.session_state["rest_target"] - time.time())
     if restante > 0:
-        st.info(f"⏳ **Descanso em curso:** `{restante}s` restantes...")
+        st.markdown(f"""
+        <div class="timer-active-banner">
+            <div class="timer-title">⏱️ Descanso em Curso</div>
+            <div class="timer-countdown">{restante}s</div>
+            <div class="timer-footer">Respire fundo e recupere o fôlego para a próxima série!</div>
+        </div>
+        """, unsafe_allow_html=True)
         time.sleep(1)
         st.rerun()
     else:
-        st.success("🔔 **Descanso concluído!** Próxima série!")
+        st.markdown("""
+        <div style="background: #ecfdf5; border: 2px solid #10b981; border-radius: 14px; padding: 14px; text-align: center; margin-bottom: 18px;">
+            <span style="font-size: 1.15rem; font-weight: 800; color: #065f46;">🔔 Descanso Concluído! Próxima série!</span>
+        </div>
+        """, unsafe_allow_html=True)
         del st.session_state["rest_target"]
 
 # --- CABECALHO ---
@@ -394,7 +435,7 @@ if st.button("✓ FINALIZAR TREINO", type="primary", use_container_width=True):
     c = conn.cursor()
     salvos = 0
     for d in dados_sessao:
-        if d[w] == 1:
+        if d[7] == 1:
             c.execute("""
                 INSERT INTO registro_treino (usuario, data, ficha, exercicio, serie_num, carga, repeticoes, concluido)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -404,6 +445,6 @@ if st.button("✓ FINALIZAR TREINO", type="primary", use_container_width=True):
     conn.close()
     if salvos > 0:
         st.balloons()
-        st.success(f"🔥 Treino salvo! {salvos} séries concluíidas.")
+        st.success(f"🔥 Treino salvo! {salvos} séries concluídas.")
     else:
         st.warning("Marque ao menos uma série como concluída (✓) antes de finalizar.")
