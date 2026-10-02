@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import streamlit as st
 import sqlite3
 import pandas as pd
@@ -5,7 +6,7 @@ from datetime import datetime, timezone, timedelta
 import urllib.parse
 import time
 
-# --- CONFIGURAÇÃO DA PÁGINA ---
+# --- CONFIGURACAO DA PAGINA ---
 st.set_page_config(
     page_title="Treino",
     page_icon="⚡",
@@ -13,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- FUSO HORÁRIO E DATA ---
+# --- FUSO HORARIO E DATA ---
 FUSO = timezone(timedelta(hours=-3))
 agora_br = datetime.now(FUSO)
 
@@ -29,7 +30,7 @@ DIAS_SEMANA_MAP = {
 
 dia_semana_nome = DIAS_SEMANA_MAP.get(agora_br.weekday(), "Treino - Segunda-feira")
 
-# --- CSS CLEAN LIGHT THEME ---
+# --- CSS CLEAN LIGHT THEME (CONFORTAVEL E ESTAVEL) ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
@@ -135,7 +136,7 @@ st.markdown("""
         border-radius: 8px;
         display: flex;
         align-items: center;
-        justify-content: center;
+        *ustify-content: center;
         height: 38px;
     }
 
@@ -151,6 +152,7 @@ st.markdown("""
         height: 38px !important;
         padding: 0 !important;
     }
+
     div[data-testid="column"] input:focus {
         background-color: #ffffff !important;
         border-color: #10b981 !important;
@@ -230,43 +232,54 @@ init_db()
 
 USUARIO = "andre"
 
-# --- FICHAS ---
+# --- FICHAS ATUALIZADAS (FULL BODY COMPLETO) ---
 FICHAS = {
     "Treino - Segunda-feira": [
-        ("Agachamento Livre", 4, "8-10"),
-        ("Leg Press 45", 3, "10-12"),
-        ("Cadeira Extensora", 3, "12-15"),
-        ("Puxada Frontal", 4, "10-12"),
-        ("Remada Curvada", 3, "8-10"),
-        ("Rosca Direta", 3, "10-12"),
-        ("Panturrilha em Pé", 4, "15-20"),
+        ("Agachamento (Livre ou Smith)", 4, "8-10", 120),
+        ("Mesa Flexora", 4, "10-12", 90),
+        ("Supino Reto (Barra ou Halteres)", 4, "8-10", 90),
+        ("Puxada Alta no Pulley", 4, "8-10", 90),
+        ("Elevação Lateral com Halteres", 4, "12-15", 60),
+        ("Tríceps Pulley (Barra reta ou V)", 4, "10-12", 60),
+        ("Rosca Direta com Barra", 4, "10-12", 60),
+        ("Panturrilha em Pé (Máquina ou Smith)", 4, "12-15", 60),
+        ("Rosca Punho (Antebraço)", 3, "12-15", 60),
     ],
     "Treino - Terça-feira": [
-        ("Supino Reto Barra", 4, "8-10"),
-        ("Supino Inclinado Halteres", 3, "10-12"),
-        ("Crucifixo Máquina", 3, "12-15"),
-        ("Desenvolvimento Halteres", 3, "10-12"),
-        ("Elevação Lateral", 4, "12-15"),
-        ("Tríceps Corda", 3, "12-15"),
-        ("Tríceps Testa", 3, "10-12"),
+        ("RDL ou Stiff", 4, "8-10", 120),
+        ("Leg Press 45°", 4, "10-12", 90),
+        ("Remada Curvada ou Remada Baixa", 4, "8-10", 90),
+        ("Crucifixo (Halteres ou Máquina)", 4, "10-12", 90),
+        ("Elevação Lateral na Polia (Cabo)", 4, "12-15", 60),
+        ("Rosca Direta com Halteres", 4, "10-12", 60),
+        ("Tríceps Corda na Polia", 4, "10-12", 60),
+        ("Panturrilha Sentada (Gêmeos)", 4, "12-15", 60),
+        ("Rosca Inversa (Barra ou Polia)", 3, "12-15", 60),
+    ],
+    "Treino - Quarta-feira": [
+        ("Descanso Ativo / Caminhada / Mobilidade", 1, "30-45 min", 60),
     ],
     "Treino - Quinta-feira": [
-        ("Stiff / RDL", 4, "8-10"),
-        ("Mesa Flexora", 3, "10-12"),
-        ("Elevação Pélvica", 3, "10-12"),
-        ("Remada Baixa", 4, "10-12"),
-        ("Crucifixo Invertido", 3, "12-15"),
-        ("Rosca Martelo", 3, "10-12"),
-        ("Abdominal Supra", 4, "15-20"),
+        ("Agachamento Hack ou Búlgaro", 4, "10-12", 90),
+        ("Cadeira Flexora", 4, "10-12", 90),
+        ("Supino Inclinado (Halteres ou Barra)", 4, "8-10", 90),
+        ("Remada Serrote com Halter", 4, "10-12", 90),
+        ("Elevação Lateral na Máquina", 4, "12-15", 60),
+        ("Tríceps Pulley (Invertida ou V)", 4, "10-12", 60),
+        ("Rosca Direta com Barra W", 4, "10-12", 60),
+        ("Panturrilha em Pé", 4, "12-15", 60),
+        ("Rosca Punho (Antebraço)", 3, "12-15", 60),
     ],
     "Treino - Sexta-feira": [
-        ("Desenvolvimento Militar", 4, "8-10"),
-        ("Elevação Lateral Cabo", 4, "12-15"),
-        ("Supino Fechado", 3, "10-12"),
-        ("Paralelas / Máquina", 3, "10-12"),
-        ("Rosca Scott", 3, "10-12"),
-        ("Rosca Alternada", 3, "10-12"),
-        ("Prancha", 3, "45-60s"),
+        ("Mesa Flexora ou Flexora em Pé", 4, "10-12", 90),
+        ("Cadeira Extensora ou Agachamento Frontal", 4, "12-15", 90),
+        ("Puxada Pulley (Neutra ou Triângulo)", 4, "8-10", 90),
+        ("Supino Reto Halteres ou Crossover", 4, "10-12", 90),
+        ("Elevação Lateral com Pausa", 4, "12-15", 60),
+        ("Rosca Direta no Cabo (Polia Baixa)", 4, "10-12", 60),
+        ("Tríceps Corda com Abertura", 4, "10-12", 60),
+        ("Panturrilha Sentada", 4, "12-15", 60),
+        ("Rosca Inversa (Antebraço)", 3, "12-15", 60),
     ]
 }
 
@@ -288,7 +301,7 @@ if "rest_target" in st.session_state:
         st.success("🔔 **Descanso concluído!** Próxima série!")
         del st.session_state["rest_target"]
 
-# --- CABEÇALHO ---
+# --- CABECALHO ---
 dia_semana_abrev = agora_br.strftime('%A')
 DIAS_PT = {
     'Monday': 'Segunda-feira', 'Tuesday': 'Terça-feira', 'Wednesday': 'Quarta-feira',
@@ -314,7 +327,12 @@ c = conn.cursor()
 
 dados_sessao = []
 
-for nome_ex, num_series, alvo_reps in FICHAS[ficha_sel]:
+for item in FICHAS[ficha_sel]:
+    nome_ex = item[0]
+    num_series = item[1]
+    alvo_reps = item[2]
+    descanso_seg = item[3] if len(item) > 3 else 60
+
     yt_query = urllib.parse.quote(f"execucao {nome_ex}")
     yt_url = f"https://www.youtube.com/results?search_query={yt_query}"
     
@@ -331,10 +349,10 @@ for nome_ex, num_series, alvo_reps in FICHAS[ficha_sel]:
             <span>{nome_ex}</span>
             <a href="{yt_url}" target="_blank" class="video-link">▶ Vídeo</a>
         </div>
-        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">Meta: {num_series} séries &bull; {alvo_reps} reps</div>
+        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">Meta: {num_series} séries &bull; {alvo_reps} reps &bull; ⏱️ {descanso_seg}s</div>
         <div class="table-header">
             <div>SET</div>
-            <div>DEMANCO</div>
+            <div>DESCANSO</div>
             <div>KG</div>
             <div>REPS</div>
             <div>✓</div>
@@ -349,8 +367,9 @@ for nome_ex, num_series, alvo_reps in FICHAS[ficha_sel]:
             st.markdown(f"<div class='set-badge'>{s}</div>", unsafe_allow_html=True)
             
         with col_desc:
-            if st.button("⏱️ 60s", key=f"t_{nome_ex}_{s}"):
-                st.session_state["rest_target"] = time.time() + 60
+            label_desc = f"⏱️ {descanso_seg}s"
+            if st.button(label_desc, key=f"t_{nome_ex}_{s}"):
+                st.session_state["rest_target"] = time.time() + descanso_seg
                 st.rerun()
             
         with col_kg:
@@ -368,7 +387,7 @@ for nome_ex, num_series, alvo_reps in FICHAS[ficha_sel]:
 
 conn.close()
 
-# Botão Finalizar Treino
+# Botao Finalizar Treino
 st.markdown("<br>", unsafe_allow_html=True)
 if st.button("✓ FINALIZAR TREINO", type="primary", use_container_width=True):
     conn = get_connection()
