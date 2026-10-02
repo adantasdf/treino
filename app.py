@@ -160,7 +160,6 @@ st.markdown("""
         display: none !important;
     }
 
-    /* Botão de descanso na linha */
     div[data-testid="column"] button {
         background-color: #f1f5f9 !important;
         border: 1px solid #cbd5e1 !important;
@@ -335,7 +334,7 @@ for nome_ex, num_series, alvo_reps in FICHAS[ficha_sel]:
         <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">Meta: {num_series} séries &bull; {alvo_reps} reps</div>
         <div class="table-header">
             <div>SET</div>
-            <div>DESCANSO</div>
+            <div>DEMANCO</div>
             <div>KG</div>
             <div>REPS</div>
             <div>✓</div>
@@ -376,7 +375,7 @@ if st.button("✓ FINALIZAR TREINO", type="primary", use_container_width=True):
     c = conn.cursor()
     salvos = 0
     for d in dados_sessao:
-        if d[7] == 1:
+        if d[w] == 1:
             c.execute("""
                 INSERT INTO registro_treino (usuario, data, ficha, exercicio, serie_num, carga, repeticoes, concluido)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -386,6 +385,6 @@ if st.button("✓ FINALIZAR TREINO", type="primary", use_container_width=True):
     conn.close()
     if salvos > 0:
         st.balloons()
-        st.success(f"🔥 Treino salvo! {salvos} séries concluídas.")
+        st.success(f"🔥 Treino salvo! {salvos} séries concluíidas.")
     else:
         st.warning("Marque ao menos uma série como concluída (✓) antes de finalizar.")
