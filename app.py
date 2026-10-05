@@ -328,11 +328,23 @@ st.markdown("""
 # ========================================================
 # --- FLUXO DE AUTENTICACAO (TELA DE LOGIN E CADASTRO) ---
 # ========================================================
+# --- RESTAURAR SESSAO AUTOMATICA (PERSISTENCIA) ---
+if "usuario_logado" not in st.session_state:
+    user_param = st.query_params.get("u")
+    if user_param:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("SELECT username, nome FROM usuarios WHERE username = ?", (user_param,))
+        row = c.fetchone()
+        conn.close()
+        if row:
+            st.session_state["usuario_logado"] = {"username": row[0], "nome": row[1]}
+
 if "usuario_logado" not in st.session_state:
     st.markdown("""
     <div style="text-align: center; margin-top: 20px;">
         <span style="font-size: 2.5rem;">⚡</span>
-        <h1 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin: 4px 0;">Treino Hevy</h1>
+        <h1 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin: 4px 0;">Treino Andrezão!!</h1>
         <p style="font-size: 0.85rem; color: #64748b;">Acesse seu perfil de treino personalizado</p>
     </div>
     """, unsafe_allow_html=True)
@@ -361,6 +373,7 @@ if "usuario_logado" not in st.session_state:
                             "username": user_data[0],
                             "nome": user_data[1]
                         }
+                        st.query_params["u"] = user_data[0]
                         st.success(f"Bem-vindo(a), {user_data[1]}!")
                         time.sleep(0.5)
                         st.rerun()
@@ -394,6 +407,7 @@ if "usuario_logado" not in st.session_state:
                             "username": c_user,
                             "nome": c_nome
                         }
+                        st.query_params["u"] = c_user
                         st.success(f"Perfil de {c_nome} criado com sucesso!")
                         time.sleep(0.5)
                         st.rerun()
@@ -524,6 +538,7 @@ st.sidebar.markdown('<div class="sidebar-logout">', unsafe_allow_html=True)
 if st.sidebar.button("🚪 Sair do Aplicativo", use_container_width=True):
     for k in list(st.session_state.keys()):
         del st.session_state[k]
+    st.query_params.clear()
     st.rerun()
 st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
