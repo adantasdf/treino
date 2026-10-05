@@ -121,7 +121,7 @@ header {background: transparent !important;}
 .sidebar-footer {
     text-align: center;
     font-size: 0.72rem;
-    color: #94a3b8;
+    color: #334155;
     font-weight: 500;
     margin-top: 25px;
     padding-top: 15px;
@@ -217,7 +217,7 @@ header {background: transparent !important;}
     gap: 8px;
     font-size: 0.72rem;
     font-weight: 700;
-    color: #94a3b8;
+    color: #334155;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding: 8px 0;
@@ -248,8 +248,8 @@ div[data-testid="column"] button[kind="secondary"] {
     width: 100% !important;
 }
 div[data-testid="column"] button[kind="secondary"]:hover {
-    background-color: #e2e8f0 !important;
-    border-color: #94a3b8 !important;
+    background-color: #334155 !important;
+    border-color: #334155 !important;
     color: #0f172a !important;
 }
 div[data-testid="column"] button[kind="primary"] {
@@ -300,7 +300,7 @@ if "usuario_logado" not in st.session_state:
 if "usuario_logado" not in st.session_state:
     st.markdown("""<div style="text-align: center; margin-top: 20px;">
         <span style="font-size: 2.5rem;">⚡</span>
-        <h1 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin: 4px 0;">Treino Hevy</h1>
+        <h1 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin: 4px 0;">Treino R & A</h1>
         <p style="font-size: 0.85rem; color: #64748b;">Acesse seu perfil de treino personalizado</p>
     </div>""", unsafe_allow_html=True)
 
@@ -309,7 +309,7 @@ if "usuario_logado" not in st.session_state:
     with aba_login:
         with st.form("form_login"):
             st.markdown("<p style='font-size:0.85rem; font-weight:600; color:#475569; margin-bottom:4px;'>Identificação do Usuário</p>", unsafe_allow_html=True)
-            u_login = st.text_input("Usuário", placeholder="ex: andre ou raissa").strip().lower()
+            u_login = st.text_input("Usuário", placeholder="ex: andre ou raissa", autocomplete="username").strip().lower()
             u_senha = st.text_input("Senha", type="password", placeholder="Digite sua senha")
             btn_entrar = st.form_submit_button("Entrar no Treino", use_container_width=True)
 
@@ -563,7 +563,7 @@ for item in FICHAS[ficha_sel]:
             btn_label = "✓"
             btn_type = "primary" if is_done else "secondary"
 
-            if st.button(btn_label, key=f"btn_done_{nome_ex}_{s}", type=btn_type):
+            if st.button(btn_label, key=f"btn_done_{nome_ex}_{s}", type=btn_type, use_container_width=True):
                 novo_estado = not is_done
                 st.session_state[done_key] = novo_estado
                 alternar_status_serie(USUARIO_ATUAL, data_sel, ficha_sel, nome_ex, s, novo_estado)
@@ -594,3 +594,9 @@ if st.button("✓ FINALIZAR TREINO", key="finish_all"):
     else:
         st.warning("Marque ao menos uma série como concluída (✓) antes de finalizar.")
 st.markdown('</div>', unsafe_allow_html=True)
+
+try:
+    with open("/home/ubuntu/treino/style.css") as f_css:
+        st.markdown(f"", unsafe_allow_html=True)
+except Exception:
+    pass

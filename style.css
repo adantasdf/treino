@@ -1,0 +1,129 @@
+/* TRAVA HORIZONTAL NO CELULAR */
+[data-testid="stHorizontalBlock"],
+div[data-testid="stHorizontalBlock"] {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-bottom: 8px !important;
+}
+
+[data-testid="stHorizontalBlock"] > div,
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"],
+[data-testid="stHorizontalBlock"] > [data-testid="column"] {
+    min-width: 0 !important;
+    width: auto !important;
+}
+
+/* 1. SET: Número compacto à esquerda */
+[data-testid="stHorizontalBlock"] > div:first-child,
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child {
+    flex: 0 0 48px !important;
+    max-width: 48px !important;
+    width: 48px !important;
+}
+
+.set-badge {
+    height: 50px !important;
+    width: 100% !important;
+    min-height: 50px !important;
+    border-radius: 10px !important;
+    background-color: #e2e8f0 !important;
+    color: #1e293b !important;
+    font-size: 1.35rem !important;
+    font-weight: 900 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+}
+
+/* 2. BOTÃO DE DESCANSO (⏱️ 60s) */
+[data-testid="stHorizontalBlock"] > div:nth-child(2),
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:nth-child(2) {
+    flex: 1 1 0% !important;
+    width: 100% !important;
+}
+
+[data-testid="stHorizontalBlock"] > div:nth-child(2) button,
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:nth-child(2) button {
+    height: 50px !important;
+    min-height: 50px !important;
+    width: 100% !important;
+    border-radius: 10px !important;
+    background-color: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+[data-testid="stHorizontalBlock"] > div:nth-child(2) button p,
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:nth-child(2) button p {
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    color: #334155 !important;
+    margin: 0 !important;
+}
+
+/* 3. BOTÃO DE CHECK AMPLO NA COLUNA STATUS */
+[data-testid="stHorizontalBlock"] > div:last-child,
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child {
+    flex: 1 1 0% !important;
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* ESTILO PENDENTE: CINZA GRAFITE ESCURO (#334155) COM CHECK BRANCO */
+[data-testid="stHorizontalBlock"] > div:last-child button,
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child button {
+    height: 50px !important;
+    min-height: 50px !important;
+    width: 100% !important;
+    border-radius: 10px !important;
+    background-color: #334155 !important;
+    background: #334155 !important;
+    border: 2px solid #1e293b !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.15s ease !important;
+}
+
+[data-testid="stHorizontalBlock"] > div:last-child button p,
+[data-testid="stHorizontalBlock"] > div:last-child button span {
+    color: #ffffff !important; /* Check branco nítido no fundo escuro */
+    font-size: 1.8rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+}
+
+/* ESTILO CONCLUÍDO: VERDE ESMERALDA VIBRANTE */
+[data-testid="stHorizontalBlock"] > div:last-child button[kind="primary"],
+[data-testid="stHorizontalBlock"] > div:last-child button[data-testid*="primary"],
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child button[kind="primary"],
+[data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child button[data-testid*="primary"],
+button[kind="primary"],
+button[data-testid*="primary"] {
+    background-color: #10b981 !important;
+    background: #10b981 !important;
+    border: 2px solid #059669 !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.45) !important;
+}
+
+[data-testid="stHorizontalBlock"] > div:last-child button[kind="primary"] p,
+[data-testid="stHorizontalBlock"] > div:last-child button[kind="primary"] span,
+[data-testid="stHorizontalBlock"] > div:last-child button[data-testid*="primary"] p,
+[data-testid="stHorizontalBlock"] > div:last-child button[data-testid*="primary"] span {
+    color: #ffffff !important;
+    font-size: 1.8rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+}
