@@ -1,3 +1,4 @@
+import streamlit.components.v1 as components
 # -*- coding: utf-8 -*-
 import streamlit as st
 import sqlite3
@@ -498,6 +499,7 @@ if "rest_target" in st.session_state:
         st.markdown("""<div style="background: #ecfdf5; border: 2px solid #10b981; border-radius: 14px; padding: 14px; text-align: center; margin-bottom: 18px;">
             <span style="font-size: 1.15rem; font-weight: 800; color: #065f46;">🔔 Descanso Concluído! Próxima série!</span>
         </div>""", unsafe_allow_html=True)
+        components.html("""""", height=0)
         del st.session_state["rest_target"]
 
 dia_semana_abrev = agora_br.strftime("%A")
