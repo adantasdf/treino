@@ -509,18 +509,29 @@ st.sidebar.markdown("""<div class="sidebar-footer">
 if "rest_target" in st.session_state:
     restante = int(st.session_state["rest_target"] - time.time())
     if restante > 0:
-        st.markdown(f"""<div class="timer-active-banner">
-            <div class="timer-title">⏱️ Descanso em Curso</div>
-            <div class="timer-countdown">{restante}s</div>
-            <div class="timer-footer">Respire fundo e recupere o fôlego para a próxima série!</div>
+        st.markdown(f"""<div style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 12px 18px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-radius: 0 0 16px 16px; border-bottom: 2px solid #10b981; box-shadow: 0 10px 25px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.4rem;">⏱️</span>
+                <div>
+                    <div style="font-weight: 700; color: #f8fafc; font-size: 0.95rem;">Descanso em Curso</div>
+                    <div style="color: #94a3b8; font-size: 0.75rem;">Respire fundo para a próxima série</div>
+                </div>
+            </div>
+            <div style="background: #10b981; color: #022c22; font-family: monospace; font-size: 1.35rem; font-weight: 800; padding: 4px 14px; border-radius: 9999px;">
+                {restante}s
+            </div>
         </div>""", unsafe_allow_html=True)
         time.sleep(1)
         st.rerun()
     else:
-        st.markdown("""<div style="background: #ecfdf5; border: 2px solid #10b981; border-radius: 14px; padding: 14px; text-align: center; margin-bottom: 18px;">
-            <span style="font-size: 1.15rem; font-weight: 800; color: #065f46;">🔔 Descanso Concluído! Próxima série!</span>
+        st.markdown("""<div style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 12px 18px; background: #ecfdf5; border-radius: 0 0 16px 16px; border-bottom: 2px solid #10b981; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); text-align: center;">
+            <span style="font-size: 1.05rem; font-weight: 800; color: #065f46;">🔔 Descanso Concluído! Próxima série!</span>
         </div>""", unsafe_allow_html=True)
         components.html("""""", height=0)
+                _alvo = st.session_state.get("alvo_scroll", "")
+        if _alvo:
+            _js = f'<script>setTimeout(function(){{ var el = window.parent.document.getElementById("{_alvo}"); if (el) {{ el.scrollIntoView({{behavior: "smooth", block: "center"}}); }} }}, 300);</script>'
+            components.html(_js, height=0)
         del st.session_state["rest_target"]
 
 dia_semana_abrev = agora_br.strftime("%A")
@@ -567,6 +578,8 @@ for item in FICHAS[ficha_sel]:
     </div>""", unsafe_allow_html=True)
 
     for s in range(1, num_series + 1):
+        ancora_id = f"card_{s}_" + nome_ex.replace(" ", "_").replace("(", "").replace(")", "").replace("/", "")
+        st.markdown(f"<div id='{ancora_id}'></div>", unsafe_allow_html=True)
         col_set, col_desc, col_done = st.columns([1, 2.5, 2.5])
 
         with col_set:
@@ -575,6 +588,7 @@ for item in FICHAS[ficha_sel]:
         with col_desc:
             label_desc = "⏱️ 60s"
             if st.button(label_desc, key=f"t_{nome_ex}_{s}"):
+                st.session_state["alvo_scroll"] = ancora_id
                 st.session_state["rest_target"] = time.time() + 60
                 st.rerun()
 
@@ -591,6 +605,7 @@ for item in FICHAS[ficha_sel]:
                 st.session_state[done_key] = novo_estado
                 alternar_status_serie(USUARIO_ATUAL, data_sel, ficha_sel, nome_ex, s, novo_estado)
                 if novo_estado:
+                    st.session_state["alvo_scroll"] = ancora_id
                     st.session_state["rest_target"] = time.time() + 60
                 st.rerun()
 
