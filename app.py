@@ -521,14 +521,15 @@ if "rest_target" in st.session_state:
                 {restante}s
             </div>
         </div>""", unsafe_allow_html=True)
+        if st.session_state.pop("subir_scroll", False):
+            components.html('', height=0)
         time.sleep(1)
         st.rerun()
     else:
         st.markdown("""<div style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 12px 18px; background: #ecfdf5; border-radius: 0 0 16px 16px; border-bottom: 2px solid #10b981; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); text-align: center;">
             <span style="font-size: 1.05rem; font-weight: 800; color: #065f46;">🔔 Descanso Concluído! Próxima série!</span>
         </div>""", unsafe_allow_html=True)
-        components.html("""""", height=0)
-                _alvo = st.session_state.get("alvo_scroll", "")
+        _alvo = st.session_state.get("alvo_scroll", "")
         if _alvo:
             _js = f'<script>setTimeout(function(){{ var el = window.parent.document.getElementById("{_alvo}"); if (el) {{ el.scrollIntoView({{behavior: "smooth", block: "center"}}); }} }}, 300);</script>'
             components.html(_js, height=0)
@@ -589,6 +590,7 @@ for item in FICHAS[ficha_sel]:
             label_desc = "⏱️ 60s"
             if st.button(label_desc, key=f"t_{nome_ex}_{s}"):
                 st.session_state["alvo_scroll"] = ancora_id
+                st.session_state["subir_scroll"] = True
                 st.session_state["rest_target"] = time.time() + 60
                 st.rerun()
 
@@ -606,6 +608,7 @@ for item in FICHAS[ficha_sel]:
                 alternar_status_serie(USUARIO_ATUAL, data_sel, ficha_sel, nome_ex, s, novo_estado)
                 if novo_estado:
                     st.session_state["alvo_scroll"] = ancora_id
+                st.session_state["subir_scroll"] = True
                     st.session_state["rest_target"] = time.time() + 60
                 st.rerun()
 
