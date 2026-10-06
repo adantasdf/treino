@@ -608,7 +608,7 @@ for item in FICHAS[ficha_sel]:
                 alternar_status_serie(USUARIO_ATUAL, data_sel, ficha_sel, nome_ex, s, novo_estado)
                 if novo_estado:
                     st.session_state["alvo_scroll"] = ancora_id
-                st.session_state["subir_scroll"] = True
+                    st.session_state["subir_scroll"] = True
                     st.session_state["rest_target"] = time.time() + 60
                 st.rerun()
 
