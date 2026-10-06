@@ -467,8 +467,29 @@ st.sidebar.markdown(f"### 👤 {NOME_ATUAL}")
 st.sidebar.caption(f"Perfil: `@{USUARIO_ATUAL}`")
 st.sidebar.markdown("<hr style='margin: 8px 0; border: none; border-top: 1px solid #e2e8f0;'>", unsafe_allow_html=True)
 
+data_objeto = st.sidebar.date_input("Data", value=agora_br.date())
+data_sel = data_objeto.strftime("%Y-%m-%d")
+
+# Detecta se ja existe treino gravado nessa data para selecionar a ficha certa
+try:
+    _conn = get_connection()
+    _c = _conn.cursor()
+    _c.execute("SELECT ficha FROM registro_treino WHERE usuario = ? AND data = ? LIMIT 1", (USUARIO_ATUAL, data_sel))
+    _res = _c.fetchone()
+    _conn.close()
+    ficha_banco = _res[0] if _res else None
+except Exception:
+    ficha_banco = None
+
+if ficha_banco and ficha_banco in lista_fichas:
+    idx_padrao = lista_fichas.index(ficha_banco)
+else:
+    _dia_sel = data_objeto.strftime("%A")
+    _map = {"Sunday": 0, "Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4, "Saturday": 5}
+    _idx = _map.get(_dia_sel, 0)
+    idx_padrao = _idx if _idx < len(lista_fichas) else 0
+
 ficha_sel = st.sidebar.selectbox("Ficha Ativa", lista_fichas, index=idx_padrao)
-data_sel = st.sidebar.date_input("Data", value=agora_br.date()).strftime("%Y-%m-%d")
 
 st.sidebar.markdown("<br><hr style='margin: 15px 0; border: none; border-top: 1px solid #e2e8f0;'>", unsafe_allow_html=True)
 
