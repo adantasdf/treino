@@ -83,7 +83,14 @@ def alternar_status_serie(usuario, data, ficha, exercicio, serie_num, concluido)
     conn.commit()
     conn.close()
 
-css_code = """<style>
+css_code = """
+<!-- Meta tags para instalação e tela cheia como PWA no telemovel -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f172a">
+
+<style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap');
 html, body, [data-testid="stAppViewContainer"] {
     background-color: #f8fafc !important;
@@ -237,15 +244,67 @@ header {background: transparent !important;}
     justify-content: center;
     height: 40px;
 }
-div[data-testid="column"] /* Botao de serie pendente em cinza escuro */
-div[data-testid="stButton"] button[kind="secondary"],
-button[kind="secondary"] {
+
+
+/* Botao de serie pendente em cinzento escuro solido */
+button[kind="secondary"],
+[data-testid="stBaseButton-secondary"],
+[data-testid="baseButton-secondary"],
+div[data-testid="stColumn"] button[kind="secondary"],
+div[data-testid="column"] button {
     background-color: #334155 !important;
     background: #334155 !important;
-    color: #e2e8f0 !important;
+    color: #f8fafc !important;
     border: 1px solid #475569 !important;
     border-radius: 8px !important;
     font-weight: 700 !important;
+}
+
+button[kind="secondary"] p,
+[data-testid="stBaseButton-secondary"] p,
+div[data-testid="stColumn"] button p {
+    color: #f8fafc !important;
+}
+
+div[data-testid="column"] div[data-testid="stButton"] button:hover,
+div[data-testid="column"] button[kind="secondary"]:hover {
+    background-color: #475569 !important;
+    background: #475569 !important;
+    color: #ffffff !important;
+    border-color: #64748b !important;
+}
+
+/* O botao de sair na barra lateral fica estritamente em branco com texto escuro */
+section[data-testid="stSidebar"] div[data-testid="stButton"] button,
+section[data-testid="stSidebar"] button,
+[data-testid="stSidebar"] button {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+section[data-testid="stSidebar"] div[data-testid="stButton"] button p,
+section[data-testid="stSidebar"] button p,
+[data-testid="stSidebar"] button div {
+    color: #0f172a !important;
+}
+
+section[data-testid="stSidebar"] div[data-testid="stButton"] button:hover,
+section[data-testid="stSidebar"] button:hover,
+[data-testid="stSidebar"] button:hover {
+    background-color: #f8fafc !important;
+    background: #f8fafc !important;
+    color: #dc2626 !important;
+    border-color: #fca5a5 !important;
+}
+
+section[data-testid="stSidebar"] div[data-testid="stButton"] button:hover p,
+section[data-testid="stSidebar"] button:hover p {
+    color: #dc2626 !important;
 }
 
 div[data-testid="stButton"] button[kind="secondary"]:hover,
@@ -262,7 +321,7 @@ div[data-testid="column"] button[kind="secondary"]:hover {
 }
 div[data-testid="column"] button[kind="primary"] {
     background: #10b981 !important;
-    bordeer: 1px solid #059669 !important;
+    border: 1px solid #059669 !important;
     border-radius: 8px !important;
     color: #ffffff !important;
     font-size: 1.05rem !important;
@@ -274,7 +333,7 @@ div[data-testid="column"] button[kind="primary"] {
 }
 div[data-testid="column"] button[kind="primary"]:hover {
     background: #059669 !important;
-l}
+}
 .finish-btn button {
     background: #10b981 !important;
     border: none !important;
@@ -291,6 +350,453 @@ l}
     background: #059669 !important;
     border-color: #059669 !important;
 ky
+
+/* Botao de sair do aplicativo na barra lateral em branco limpo */
+section[data-testid="stSidebar"] button,
+section[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"],
+[data-testid="stSidebar"] div.stButton > button {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+section[data-testid="stSidebar"] button:hover,
+section[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"]:hover,
+[data-testid="stSidebar"] div.stButton > button:hover {
+    background-color: #f8fafc !important;
+    background: #f8fafc !important;
+    color: #ef4444 !important;
+    border-color: #fca5a5 !important;
+}
+
+
+/* Forcar cor branca no botao de logout da sidebar */
+[data-testid="stSidebar"] button,
+[data-testid="stSidebar"] button[kind="secondary"],
+[data-testid="stSidebar"] [data-testid="baseButton-secondary"],
+[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"] {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+[data-testid="stSidebar"] button p,
+[data-testid="stSidebar"] button div {
+    color: #1e293b !important;
+}
+
+[data-testid="stSidebar"] button:hover,
+[data-testid="stSidebar"] button[kind="secondary"]:hover,
+[data-testid="stSidebar"] [data-testid="baseButton-secondary"]:hover,
+[data-testid="stSidebar"] [data-testid="stBaseButton-secondary"]:hover {
+    background-color: #f8fafc !important;
+    background: #f8fafc !important;
+    color: #ef4444 !important;
+    border-color: #fca5a5 !important;
+}
+
+[data-testid="stSidebar"] button:hover p {
+    color: #ef4444 !important;
+}
+
+
+/* Botao de check pendente em cinzento escuro */
+div[data-testid="stButton"] button:has(p:contains("✓")),
+div[data-testid="column"] button[kind="secondary"] {
+    background-color: #334155 !important;
+    background: #334155 !important;
+    color: #f1f5f9 !important;
+    border: 1px solid #475569 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+}
+
+div[data-testid="stButton"] button:has(p:contains("✓")) p,
+p,
+div[data-testid="column"] button[kind="secondary"] p {
+    color: #f1f5f9 !important;
+}
+
+div[data-testid="stButton"] button:has(p:contains("✓")):hover,
+:hover,
+div[data-testid="column"] button[kind="secondary"]:hover {
+    background-color: #475569 !important;
+    background: #475569 !important;
+    color: #ffffff !important;
+    border-color: #64748b !important;
+}
+
+/* Botao de check concluido em verde esmeralda */
+button[kind="primary"],
+div[data-testid="column"] button[kind="primary"] {
+    background-color: #10b981 !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+/* Botao de sair do aplicativo estritamente em branco */
+section[data-testid="stSidebar"] button,
+section[data-testid="stSidebar"] button[kind="secondary"],
+[data-testid="stSidebar"] button {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+section[data-testid="stSidebar"] button p,
+[data-testid="stSidebar"] button p {
+    color: #0f172a !important;
+}
+
+
+/* Fixar botoes secundarios de treino em cinzento escuro permanente */
+div[data-testid="column"] button[kind="secondary"],
+div[data-testid="column"] [data-testid="stBaseButton-secondary"],
+button[kind="secondary"] {
+    background-color: #334155 !important;
+    background: #334155 !important;
+    color: #f8fafc !important;
+    border: 1px solid #475569 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+}
+
+div[data-testid="column"] button p,
+div[data-testid="column"] button span,
+button[kind="secondary"] p,
+button[kind="secondary"] span {
+    color: #f8fafc !important;
+    fill: #f8fafc !important;
+}
+
+div[data-testid="column"] button:hover,
+button[kind="secondary"]:hover {
+    background-color: #475569 !important;
+    background: #475569 !important;
+    border-color: #64748b !important;
+    color: #ffffff !important;
+}
+
+/* Manter o botao de conclusao em verde esmeralda */
+button[kind="primary"],
+div[data-testid="column"] button[kind="primary"] {
+    background-color: #10b981 !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+
+/* Botao de check pendente em cinzento escuro absoluto */
+[data-testid="stColumn"] button[kind="secondary"],
+[data-testid="stColumn"] [data-testid="stBaseButton-secondary"],
+[data-testid="column"] button[kind="secondary"],
+div[data-testid="stHorizontalBlock"] button[kind="secondary"] {
+    background-color: #334155 !important;
+    background: #334155 !important;
+    color: #ffffff !important;
+    border: 1px solid #475569 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+}
+
+[data-testid="stColumn"] button[kind="secondary"] p,
+[data-testid="stColumn"] [data-testid="stBaseButton-secondary"] p {
+    color: #ffffff !important;
+}
+
+[data-testid="stColumn"] button[kind="secondary"]:hover {
+    background-color: #475569 !important;
+    background: #475569 !important;
+    border-color: #64748b !important;
+    color: #ffffff !important;
+}
+
+
+/* Todos os botoes normais/secundarios com fundo cinzento escuro */
+button[kind="secondary"],
+[data-testid="baseButton-secondary"],
+[data-testid="stBaseButton-secondary"],
+.stButton > button:not([kind="primary"]) {
+    background-color: #334155 !important;
+    background: #334155 !important;
+    color: #f8fafc !important;
+    border: 1px solid #475569 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+}
+
+button[kind="secondary"] *,
+[data-testid="baseButton-secondary"] *,
+[data-testid="stBaseButton-secondary"] *,
+.stButton > button:not([kind="primary"]) * {
+    color: #f8fafc !important;
+}
+
+button[kind="secondary"]:hover,
+[data-testid="baseButton-secondary"]:hover,
+[data-testid="stBaseButton-secondary"]:hover,
+.stButton > button:not([kind="primary"]):hover {
+    background-color: #475569 !important;
+    background: #475569 !important;
+    border-color: #64748b !important;
+    color: #ffffff !important;
+}
+
+/* Manter o botao concluido em verde esmeralda */
+button[kind="primary"],
+[data-testid="baseButton-primary"],
+[data-testid="stBaseButton-primary"] {
+    background-color: #10b981 !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+/* Excecao: Apenas o botao de Sair da barra lateral fica em branco */
+section[data-testid="stSidebar"] button,
+[data-testid="stSidebar"] button {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+section[data-testid="stSidebar"] button *,
+[data-testid="stSidebar"] button * {
+    color: #0f172a !important;
+}
+
+
+/* Botoes de check das series com fundo cinzento escuro solido */
+button[kind="secondary"],
+[data-testid="stBaseButton-secondary"],
+[data-testid="baseButton-secondary"],
+div[data-testid="stColumn"] button[kind="secondary"],
+div[data-testid="column"] button {
+    background-color: #334155 !important;
+    background: #334155 !important;
+    color: #f8fafc !important;
+    border: 1px solid #475569 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+}
+
+button[kind="secondary"] p,
+button[kind="secondary"] span,
+[data-testid="stBaseButton-secondary"] p,
+div[data-testid="stColumn"] button p {
+    color: #f8fafc !important;
+    fill: #f8fafc !important;
+}
+
+button[kind="secondary"]:hover,
+div[data-testid="stColumn"] button:hover {
+    background-color: #475569 !important;
+    background: #475569 !important;
+    border-color: #64748b !important;
+    color: #ffffff !important;
+}
+
+/* Manter o botao concluido em verde esmeralda */
+button[kind="primary"],
+[data-testid="stBaseButton-primary"],
+div[data-testid="stColumn"] button[kind="primary"] {
+    background-color: #10b981 !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+/* O botao de sair na barra lateral fica com fundo branco */
+section[data-testid="stSidebar"] button,
+[data-testid="stSidebar"] button {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+section[data-testid="stSidebar"] button p {
+    color: #0f172a !important;
+}
+
+
+/* PRIORIDADE ABSOLUTA: Botao concluido em verde esmeralda */
+button[kind="primary"],
+[data-testid="stBaseButton-primary"],
+[data-testid="baseButton-primary"],
+div[data-testid="stColumn"] button[kind="primary"],
+div[data-testid="stColumn"] [data-testid="stBaseButton-primary"],
+div[data-testid="column"] button[kind="primary"] {
+    background-color: #10b981 !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border: 1px solid #059669 !important;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4) !important;
+}
+
+button[kind="primary"] *,
+[data-testid="stBaseButton-primary"] *,
+div[data-testid="stColumn"] button[kind="primary"] * {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+}
+
+button[kind="primary"]:hover,
+div[data-testid="stColumn"] button[kind="primary"]:hover {
+    background-color: #059669 !important;
+    background: #059669 !important;
+    border-color: #047857 !important;
+    color: #ffffff !important;
+}
+
+
+/* 1. Botao de check PENDENTE (cinzento escuro) - Apenas botoes secundarios */
+div[data-testid="stColumn"] button[kind="secondary"],
+div[data-testid="stColumn"] [data-testid="stBaseButton-secondary"],
+div[data-testid="column"] button[kind="secondary"],
+div[data-testid="column"] [data-testid="stBaseButton-secondary"] {
+    background-color: #334155 !important;
+    background: #334155 !important;
+    color: #f8fafc !important;
+    border: 1px solid #475569 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+}
+
+div[data-testid="stColumn"] button[kind="secondary"] p,
+div[data-testid="stColumn"] [data-testid="stBaseButton-secondary"] p,
+div[data-testid="column"] button[kind="secondary"] p {
+    color: #f8fafc !important;
+}
+
+div[data-testid="stColumn"] button[kind="secondary"]:hover,
+div[data-testid="column"] button[kind="secondary"]:hover {
+    background-color: #475569 !important;
+    background: #475569 !important;
+    border-color: #64748b !important;
+}
+
+/* 2. Botao de check CONCLUÍDO (verde esmeralda) - Máxima especificidade na coluna */
+div[data-testid="stColumn"] button[kind="primary"],
+div[data-testid="stColumn"] [data-testid="stBaseButton-primary"],
+div[data-testid="column"] button[kind="primary"],
+div[data-testid="column"] [data-testid="stBaseButton-primary"],
+button[kind="primary"],
+[data-testid="stBaseButton-primary"] {
+    background-color: #10b981 !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border: 1px solid #059669 !important;
+    border-radius: 8px !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4) !important;
+}
+
+div[data-testid="stColumn"] button[kind="primary"] p,
+div[data-testid="stColumn"] [data-testid="stBaseButton-primary"] p,
+button[kind="primary"] p {
+    color: #ffffff !important;
+}
+
+div[data-testid="stColumn"] button[kind="primary"]:hover,
+button[kind="primary"]:hover {
+    background-color: #059669 !important;
+    background: #059669 !important;
+    border-color: #047857 !important;
+}
+
+/* 3. Botao de Sair na Barra Lateral (sempre branco) */
+section[data-testid="stSidebar"] button,
+[data-testid="stSidebar"] button {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+section[data-testid="stSidebar"] button p {
+    color: #0f172a !important;
+}
+
+
+/* ==========================================================
+   SISTEMA DE CORES DOS BOTOES (DEFINITIVO)
+   ========================================================== */
+
+/* 1. BOTOES PENDENTES (CINZENTO ESCURO) - Exclui estritamente primarios */
+button[kind="secondary"]:not([data-testid*="primary"]),
+[data-testid="stBaseButton-secondary"]:not([data-testid*="primary"]),
+[data-testid="baseButton-secondary"]:not([data-testid*="primary"]),
+div[data-testid="stColumn"] button:not([data-testid*="primary"]):not([kind="primary"]) {
+    background-color: #334155 !important;
+    background: #334155 !important;
+    color: #f8fafc !important;
+    border: 1px solid #475569 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+}
+
+div[data-testid="stColumn"] button:not([data-testid*="primary"]):not([kind="primary"]) p,
+button[kind="secondary"] p {
+    color: #f8fafc !important;
+}
+
+/* 2. BOTAO CONCLUIDO (VERDE ESMERALDA) - Prioridade maxima absoluta */
+button[kind="primary"],
+button[data-testid*="primary"],
+[data-testid="stBaseButton-primary"],
+[data-testid="baseButton-primary"],
+div[data-testid="stColumn"] button[kind="primary"],
+div[data-testid="stColumn"] [data-testid*="primary"] {
+    background-color: #10b981 !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border: 1px solid #059669 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.45) !important;
+}
+
+button[kind="primary"] p,
+[data-testid*="primary"] p,
+div[data-testid="stColumn"] button[kind="primary"] p,
+div[data-testid="stColumn"] [data-testid*="primary"] p {
+    color: #ffffff !important;
+}
+
+/* 3. BOTAO DE SAIR NA SIDEBAR (SEMPRE BRANCO) */
+section[data-testid="stSidebar"] button,
+[data-testid="stSidebar"] button {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+}
+
+section[data-testid="stSidebar"] button p {
+    color: #0f172a !important;
+}
+
 </style>"""
 st.markdown(css_code, unsafe_allow_html=True)
 
@@ -498,6 +1004,8 @@ ficha_sel = st.sidebar.selectbox("Ficha Ativa", lista_fichas, index=idx_padrao)
 st.sidebar.markdown("<br><hr style='margin: 15px 0; border: none; border-top: 1px solid #e2e8f0;'>", unsafe_allow_html=True)
 
 st.sidebar.markdown('<div class="sidebar-logout">', unsafe_allow_html=True)
+
+
 if st.sidebar.button("🚪 Sair do Aplicativo", use_container_width=True):
     for k in list(st.session_state.keys()):
         del st.session_state[k]
@@ -543,14 +1051,54 @@ if "rest_target" in st.session_state:
             components.html('', height=0)
         time.sleep(1)
         st.rerun()
+    else:
         st.markdown("""<div style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 12px 18px; background: #ecfdf5; border-radius: 0 0 16px 16px; border-bottom: 2px solid #10b981; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); text-align: center;">
             <span style="font-size: 1.05rem; font-weight: 800; color: #065f46;">🔔 Descanso Concluído! Próxima série!</span>
         </div>""", unsafe_allow_html=True)
+
+        # Notificacao sonora e tatil robusta na janela pai
+        components.html('''<script>
+        (function() {
+            try {
+                var pNav = window.parent.navigator || window.navigator;
+                // Tenta vibrar tanto no frame atual quanto no parent
+                if (pNav && pNav.vibrate) {
+                    pNav.vibrate([300, 150, 300, 150, 400]);
+                } else if (navigator.vibrate) {
+                    navigator.vibrate([300, 150, 300, 150, 400]);
+                }
+            } catch(e) { console.log("Vibrate error:", e); }
+
+            try {
+                // Toca som sintetizado na janela pai para contornar suspensao do AudioContext
+                var pWin = window.parent || window;
+                var AudioCtx = pWin.AudioContext || pWin.webkitAudioContext || window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) {
+                    var ctx = new AudioCtx();
+                    if (ctx.state === 'suspended') {
+                        ctx.resume();
+                    }
+                    var osc = ctx.createOscillator();
+                    var gain = ctx.createGain();
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(880, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.4);
+                }
+            } catch(e) { console.log("Audio error:", e); }
+        })();
+        </script>''', height=0)
+
         _alvo = st.session_state.get("alvo_scroll", "")
         if _alvo:
             _js = f'<script>setTimeout(function(){{ var el = window.parent.document.getElementById("{_alvo}"); if (el) {{ el.scrollIntoView({{behavior: "smooth", block: "center"}}); }} }}, 300);</script>'
             components.html(_js, height=0)
-        del st.session_state["rest_target"]
+        if "rest_target" in st.session_state:
+            del st.session_state["rest_target"]
 
 dia_semana_abrev = agora_br.strftime("%A")
 DIAS_PT = {
