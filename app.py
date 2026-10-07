@@ -237,16 +237,23 @@ header {background: transparent !important;}
     justify-content: center;
     height: 40px;
 }
-div[data-testid="column"] button[kind="secondary"] {
-    background-color: #f1f5f9 !important;
-    border: 1px solid #cbd5e1 !important;
+div[data-testid="column"] /* Botao de serie pendente em cinza escuro */
+div[data-testid="stButton"] button[kind="secondary"],
+button[kind="secondary"] {
+    background-color: #334155 !important;
+    background: #334155 !important;
+    color: #e2e8f0 !important;
+    border: 1px solid #475569 !important;
     border-radius: 8px !important;
-    color: #475569 !important;
-    font-size: 0.88rem !important;
     font-weight: 700 !important;
-    height: 40px;
-    padding: 0 4px !important;
-    width: 100% !important;
+}
+
+div[data-testid="stButton"] button[kind="secondary"]:hover,
+button[kind="secondary"]:hover {
+    background-color: #475569 !important;
+    background: #475569 !important;
+    color: #ffffff !important;
+    border-color: #64748b !important;
 }
 div[data-testid="column"] button[kind="secondary"]:hover {
     background-color: #334155 !important;
