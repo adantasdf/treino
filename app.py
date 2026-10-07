@@ -347,14 +347,12 @@ if "usuario_logado" not in st.session_state:
             if btn_cadastrar:
                 if not c_nome or not c_user or not c_senha:
                     st.error("Preencha todos os campos para cadastrar.")
-                else:
                     conn = get_connection()
                     c = conn.cursor()
                     c.execute("SELECT username FROM usuarios WHERE username = ?", (c_user,))
                     if c.fetchone():
                         st.error(f"O usuário '{c_user}' já existe. Escolha outro ou faça login.")
                         conn.close()
-                    else:
                         c.execute("INSERT INTO usuarios (username, nome, senha_hash) VALUES (?, ?, ?)",
                                   (c_user, c_nome, hash_pw(c_senha)))
                         conn.commit()
@@ -483,7 +481,6 @@ except Exception:
 
 if ficha_banco and ficha_banco in lista_fichas:
     idx_padrao = lista_fichas.index(ficha_banco)
-else:
     _dia_sel = data_objeto.strftime("%A")
     _map = {"Sunday": 0, "Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4, "Saturday": 5}
     _idx = _map.get(_dia_sel, 0)
@@ -508,6 +505,20 @@ st.sidebar.markdown("""<div class="sidebar-footer">
 
 if "rest_target" in st.session_state:
     restante = int(st.session_state["rest_target"] - time.time())
+    components.html('''<script>
+    setTimeout(function() {
+        var btns = window.parent.document.querySelectorAll("button");
+        btns.forEach(function(b) {
+            if (b.innerText.indexOf("⏳") !== -1) {
+                b.style.setProperty("background", "linear-gradient(135deg, #fef08a 0%, #facc15 100%)", "important");
+                b.style.setProperty("color", "#713f12", "important");
+                b.style.setProperty("border", "2px solid #ca8a04", "important");
+                b.style.setProperty("box-shadow", "0 0 14px rgba(250, 204, 21, 0.6)", "important");
+                b.style.setProperty("font-weight", "800", "important");
+            }
+        });
+    }, 100);
+    </script>''', height=0)
     if restante > 0:
         st.markdown(f"""<div style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 12px 18px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-radius: 0 0 16px 16px; border-bottom: 2px solid #10b981; box-shadow: 0 10px 25px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 10px;">
@@ -525,7 +536,6 @@ if "rest_target" in st.session_state:
             components.html('', height=0)
         time.sleep(1)
         st.rerun()
-    else:
         st.markdown("""<div style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 12px 18px; background: #ecfdf5; border-radius: 0 0 16px 16px; border-bottom: 2px solid #10b981; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); text-align: center;">
             <span style="font-size: 1.05rem; font-weight: 800; color: #065f46;">🔔 Descanso Concluído! Próxima série!</span>
         </div>""", unsafe_allow_html=True)
@@ -599,8 +609,14 @@ for item in FICHAS[ficha_sel]:
             if done_key not in st.session_state:
                 st.session_state[done_key] = (nome_ex, s) in series_feitas_hoje
             is_done = st.session_state[done_key]
-            btn_label = "✓"
-            btn_type = "primary" if is_done else "secondary"
+            em_descanso_aqui = (st.session_state.get('alvo_scroll') == ancora_id and 'rest_target' in st.session_state and int(st.session_state['rest_target'] - time.time()) > 0)
+            if em_descanso_aqui:
+                btn_label = '⏳'
+                btn_type = 'secondary'
+            else:
+                btn_label = '✓'
+                btn_type = 'primary' if is_done else 'secondary'
+                btn_type = "primary" if is_done else "secondary" 
 
             if st.button(btn_label, key=f"btn_done_{nome_ex}_{s}", type=btn_type, use_container_width=True):
                 novo_estado = not is_done
@@ -632,7 +648,6 @@ if st.button("✓ FINALIZAR TREINO", key="finish_all"):
     if salvos > 0:
         st.balloons()
         st.success(f"🔥 Treino salvo! {salvos} séries concluídas.")
-    else:
         st.warning("Marque ao menos uma série como concluída (✓) antes de finalizar.")
 st.markdown('</div>', unsafe_allow_html=True)
 
