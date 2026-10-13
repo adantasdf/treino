@@ -1,3 +1,4 @@
+import os
 import streamlit.components.v1 as components
 # -*- coding: utf-8 -*-
 import streamlit as st
@@ -801,33 +802,69 @@ section[data-testid="stSidebar"] button p {
 st.markdown(css_code, unsafe_allow_html=True)
 
 
-# Auto-login via localStorage para mobile/PWA
-if "usuario_logado" not in st.session_state and not st.query_params.get("u"):
-    components.html('''<script>
-    (function() {
-        try {
-            var u = window.parent.localStorage.getItem("treino_usuario_salvo");
-            if (u) {
-                var url = new URL(window.parent.location.href);
-                if (!url.searchParams.get("u")) {
-                    url.searchParams.set("u", u);
-                    window.parent.location.replace(url.href);
-                }
-            }
-        } catch(e) {}
-    })();
-    </script>''', height=0)
+# Persistencia de sessao direta no servidor
+ARQ_SESSAO = "/home/ubuntu/treino/.sessao_ativa"
+
+if "usuario_logado" not in st.session_state:
+    user_param = st.query_params.get("u")
+    
+    # Se nao veio pela URL, verifica se existe sessao gravada no servidor
+    if not user_param and os.path.exists(ARQ_SESSAO):
+        try:
+            with open(ARQ_SESSAO, "r", encoding="utf-8") as f_s:
+                user_param = f_s.read().strip()
+        except Exception:
+            user_param = None
+            
+    if user_param:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("SELECT username, nome FROM usuarios WHERE username = ?", (str(user_param).strip().lower(),))
+        row = c.fetchone()
+        conn.close()
+        if row:
+            st.session_state["usuario_logado"] = {"username": row[0], "nome": row[1]}
+            st.query_params["u"] = row[0]
+            try:
+                with open(ARQ_SESSAO, "w", encoding="utf-8") as f_s:
+                    f_s.write(row[0])
+            except Exception:
+                pass
 
 if "usuario_logado" not in st.session_state:
     user_param = st.query_params.get("u")
     if user_param:
         conn = get_connection()
         c = conn.cursor()
-        c.execute("SELECT username, nome FROM usuarios WHERE username = ?", (user_param,))
+        c.execute("SELECT username, nome FROM usuarios WHERE username = ?", (str(user_param).strip().lower(),))
         row = c.fetchone()
         conn.close()
         if row:
             st.session_state["usuario_logado"] = {"username": row[0], "nome": row[1]}
+            st.query_params["u"] = row[0]
+    else:
+        # Lê o localStorage direto da página principal sem iframe
+        st.markdown('''<img src="x" style="display:none;" onerror="
+            try {
+                var u = localStorage.getItem('treino_usuario_salvo');
+                if (u && !window.location.search.includes('u=')) {
+                    var sep = window.location.search ? '&' : '?';
+                    window.location.replace(window.location.pathname + window.location.search + sep + 'u=' + encodeURIComponent(u));
+                }
+            } catch(e) {}
+        ">''', unsafe_allow_html=True)
+
+if "usuario_logado" not in st.session_state:
+    user_param = st.query_params.get("u")
+    if user_param:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("SELECT username, nome FROM usuarios WHERE username = ?", (str(user_param).strip().lower(),))
+        row = c.fetchone()
+        conn.close()
+        if row:
+            st.session_state["usuario_logado"] = {"username": row[0], "nome": row[1]}
+            st.query_params["u"] = row[0]
 
 if "usuario_logado" not in st.session_state:
     st.markdown("""<div style="text-align: center; margin-top: 20px;">
@@ -862,6 +899,11 @@ if "usuario_logado" not in st.session_state:
                             "nome": user_data[1]
                         }
                         st.query_params["u"] = user_data[0]
+                        try:
+                            with open(ARQ_SESSAO, "w", encoding="utf-8") as f_s:
+                                f_s.write(user_data[0])
+                        except Exception:
+                            pass
                         components.html(f'''<script>
                             try {{ window.parent.localStorage.setItem("treino_usuario_salvo", "{user_data[0]}"); }} catch(e) {{}}
                         </script>''', height=0)
@@ -1029,9 +1071,11 @@ st.sidebar.markdown('<div class="sidebar-logout">', unsafe_allow_html=True)
 
 
 if st.sidebar.button("🚪 Sair do Aplicativo", use_container_width=True):
-    components.html('''<script>
-        try { window.parent.localStorage.removeItem("treino_usuario_salvo"); } catch(e) {}
-    </script>''', height=0)
+    if os.path.exists(ARQ_SESSAO):
+        try:
+            os.remove(ARQ_SESSAO)
+        except Exception:
+            pass
     for k in list(st.session_state.keys()):
         del st.session_state[k]
     st.query_params.clear()
