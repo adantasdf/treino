@@ -1035,15 +1035,13 @@ if "rest_target" in st.session_state:
     }, 100);
     </script>''', height=0)
     if restante > 0:
-        st.markdown(f"""<div id="contador_topo" style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 12px 18px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-radius: 0 0 16px 16px; border-bottom: 2px solid #10b981; box-shadow: 0 10px 25px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-size: 1.4rem;">⏱️</span>
-                <div>
-                    <div style="font-weight: 700; color: #f8fafc; font-size: 0.95rem;">Descanso em Curso</div>
-                    <div style="color: #94a3b8; font-size: 0.75rem;">Respire fundo para a próxima série</div>
-                </div>
+        st.markdown(f"""<div id="contador_topo" style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 14px 16px 18px 16px; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(12px); border-radius: 0 0 20px 20px; border-bottom: 2px solid #10b981; box-shadow: 0 12px 28px rgba(0,0,0,0.45); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span style="font-size: 1.25rem;">⏱️</span>
+                <span style="font-weight: 800; color: #f8fafc; font-size: 1.05rem; letter-spacing: 0.3px;">Descanso em Curso</span>
             </div>
-            <div style="background: #10b981; color: #022c22; font-family: monospace; font-size: 1.35rem; font-weight: 800; padding: 4px 14px; border-radius: 9999px;">
+            <div style="color: #94a3b8; font-size: 0.8rem; margin-top: -4px;">Respire fundo para a próxima série</div>
+            <div style="margin-top: 4px; background: #10b981; color: #022c22; font-family: monospace, sans-serif; font-size: 3.2rem; font-weight: 900; line-height: 1; padding: 8px 32px; border-radius: 9999px; letter-spacing: 2px; box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);">
                 {restante}s
             </div>
         </div>""", unsafe_allow_html=True)
