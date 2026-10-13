@@ -1035,7 +1035,7 @@ if "rest_target" in st.session_state:
     }, 100);
     </script>''', height=0)
     if restante > 0:
-        st.markdown(f"""<div style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 12px 18px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-radius: 0 0 16px 16px; border-bottom: 2px solid #10b981; box-shadow: 0 10px 25px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: space-between;">
+        st.markdown(f"""<div id="contador_topo" style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 12px 18px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-radius: 0 0 16px 16px; border-bottom: 2px solid #10b981; box-shadow: 0 10px 25px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 1.4rem;">⏱️</span>
                 <div>
@@ -1048,7 +1048,26 @@ if "rest_target" in st.session_state:
             </div>
         </div>""", unsafe_allow_html=True)
         if st.session_state.pop("subir_scroll", False):
-            components.html('', height=0)
+            _js_topo = '''<script>
+            (function() {
+                setTimeout(function() {
+                    try {
+                        var pDoc = window.parent.document;
+                        var banner = pDoc.getElementById("contador_topo");
+                        if (banner) {
+                            banner.scrollIntoView({behavior: "smooth", block: "start"});
+                        }
+                        var container = pDoc.querySelector('[data-testid="stAppViewContainer"]') || pDoc.querySelector('.main') || pDoc.documentElement;
+                        if (container) {
+                            container.scrollTo({top: 0, behavior: "smooth"});
+                        }
+                    } catch(e) {
+                        console.log("Erro scroll topo:", e);
+                    }
+                }, 80);
+            })();
+            </script>'''
+            components.html(_js_topo, height=0)
         time.sleep(1)
         st.rerun()
     else:
