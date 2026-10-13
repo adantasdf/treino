@@ -800,6 +800,24 @@ section[data-testid="stSidebar"] button p {
 </style>"""
 st.markdown(css_code, unsafe_allow_html=True)
 
+
+# Auto-login via localStorage para mobile/PWA
+if "usuario_logado" not in st.session_state and not st.query_params.get("u"):
+    components.html('''<script>
+    (function() {
+        try {
+            var u = window.parent.localStorage.getItem("treino_usuario_salvo");
+            if (u) {
+                var url = new URL(window.parent.location.href);
+                if (!url.searchParams.get("u")) {
+                    url.searchParams.set("u", u);
+                    window.parent.location.replace(url.href);
+                }
+            }
+        } catch(e) {}
+    })();
+    </script>''', height=0)
+
 if "usuario_logado" not in st.session_state:
     user_param = st.query_params.get("u")
     if user_param:
@@ -838,11 +856,15 @@ if "usuario_logado" not in st.session_state:
                     conn.close()
 
                     if user_data and user_data[2] == hash_pw(u_senha):
+
                         st.session_state["usuario_logado"] = {
                             "username": user_data[0],
                             "nome": user_data[1]
                         }
                         st.query_params["u"] = user_data[0]
+                        components.html(f'''<script>
+                            try {{ window.parent.localStorage.setItem("treino_usuario_salvo", "{user_data[0]}"); }} catch(e) {{}}
+                        </script>''', height=0)
                         st.success(f"Bem-vindo(a), {user_data[1]}!")
                         time.sleep(0.5)
                         st.rerun()
@@ -1007,6 +1029,9 @@ st.sidebar.markdown('<div class="sidebar-logout">', unsafe_allow_html=True)
 
 
 if st.sidebar.button("🚪 Sair do Aplicativo", use_container_width=True):
+    components.html('''<script>
+        try { window.parent.localStorage.removeItem("treino_usuario_salvo"); } catch(e) {}
+    </script>''', height=0)
     for k in list(st.session_state.keys()):
         del st.session_state[k]
     st.query_params.clear()
