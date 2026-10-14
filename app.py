@@ -1089,102 +1089,173 @@ st.sidebar.markdown("""<div class="sidebar-footer">
 
 if "rest_target" in st.session_state:
     restante = int(st.session_state["rest_target"] - time.time())
-    components.html('''<script>
-    setTimeout(function() {
-        var btns = window.parent.document.querySelectorAll("button");
-        btns.forEach(function(b) {
-            if (b.innerText.indexOf("⏳") !== -1) {
-                b.style.setProperty("background", "linear-gradient(135deg, #fef08a 0%, #facc15 100%)", "important");
-                b.style.setProperty("color", "#713f12", "important");
-                b.style.setProperty("border", "2px solid #ca8a04", "important");
-                b.style.setProperty("box-shadow", "0 0 14px rgba(250, 204, 21, 0.6)", "important");
-                b.style.setProperty("font-weight", "800", "important");
-            }
-        });
-    }, 100);
-    </script>''', height=0)
+    _alvo = st.session_state.get("alvo_scroll", "")
+    _subir = "true" if st.session_state.pop("subir_scroll", False) else "false"
+
     if restante > 0:
-        st.markdown(f"""<div id="contador_topo" style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 14px 16px 18px 16px; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(12px); border-radius: 0 0 20px 20px; border-bottom: 2px solid #10b981; box-shadow: 0 12px 28px rgba(0,0,0,0.45); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px;">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                <span style="font-size: 1.25rem;">⏱️</span>
-                <span style="font-weight: 800; color: #f8fafc; font-size: 1.05rem; letter-spacing: 0.3px;">Descanso em Curso</span>
+        # Container externo extra para isolar o DOM do React
+        st.markdown(f"""<div><div id="contador_topo" style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 14px 16px 18px 16px; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(12px); border-radius: 0 0 20px 20px; border-bottom: 2px solid #10b981; box-shadow: 0 12px 28px rgba(0,0,0,0.45); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px; transition: background 0.3s ease, padding 0.3s ease;">
+            <div id="vista_andamento" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 100%;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span style="font-size: 1.25rem;">⏱️</span>
+                    <span style="font-weight: 800; color: #f8fafc; font-size: 1.05rem; letter-spacing: 0.3px;">Descanso em Curso</span>
+                </div>
+                <div style="color: #94a3b8; font-size: 0.8rem; margin-top: -4px;">Respire fundo para a próxima série</div>
+                <div style="margin-top: 4px; background: #10b981; color: #022c22; font-family: monospace, sans-serif; font-size: 3.2rem; font-weight: 900; line-height: 1; padding: 8px 32px; border-radius: 9999px; letter-spacing: 2px; box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);">
+                    <span id="contador_numero">{restante}s</span>
+                </div>
             </div>
-            <div style="color: #94a3b8; font-size: 0.8rem; margin-top: -4px;">Respire fundo para a próxima série</div>
-            <div style="margin-top: 4px; background: #10b981; color: #022c22; font-family: monospace, sans-serif; font-size: 3.2rem; font-weight: 900; line-height: 1; padding: 8px 32px; border-radius: 9999px; letter-spacing: 2px; box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);">
-                {restante}s
+            <div id="vista_concluido" style="display: none; align-items: center; justify-content: center; width: 100%;">
+                <span style="font-size: 1.1rem; font-weight: 800; color: #065f46;">🔔 Descanso Concluído! Próxima série!</span>
             </div>
-        </div>""", unsafe_allow_html=True)
-        if st.session_state.pop("subir_scroll", False):
-            _js_topo = '''<script>
-            (function() {
-                setTimeout(function() {
-                    try {
-                        var pDoc = window.parent.document;
+        </div></div>""", unsafe_allow_html=True)
+
+        components.html(f"""<script>
+        (function() {{
+            var pWin = window.parent || window;
+            var pDoc = pWin.document;
+            var restanteInicial = {restante};
+            var alvoScroll = "{_alvo}";
+            var deveSubir = {_subir};
+            var endTime = Date.now() + (restanteInicial * 1000);
+            var wakeLock = null;
+
+            // 1. Mantem a tela acesa durante o descanso (Wake Lock API)
+            try {{
+                if (pWin.navigator && pWin.navigator.wakeLock) {{
+                    pWin.navigator.wakeLock.request('screen').then(function(wl) {{
+                        wakeLock = wl;
+                    }}).catch(function(e) {{}});
+                }}
+            }} catch(e) {{}}
+
+            // 2. Estiliza o botao ativo com ⏳ em amarelo sem destruir nos filhos do React
+            setTimeout(function() {{
+                var btns = pDoc.querySelectorAll("button");
+                btns.forEach(function(b) {{
+                    if (b.textContent && b.textContent.indexOf("⏳") !== -1) {{
+                        b.style.setProperty("background", "linear-gradient(135deg, #fef08a 0%, #facc15 100%)", "important");
+                        b.style.setProperty("color", "#713f12", "important");
+                        b.style.setProperty("border", "2px solid #ca8a04", "important");
+                        b.style.setProperty("box-shadow", "0 0 14px rgba(250, 204, 21, 0.6)", "important");
+                        b.style.setProperty("font-weight", "800", "important");
+                    }}
+                }});
+            }}, 50);
+
+            // 3. Sobe o scroll para o topo ao iniciar o descanso
+            if (deveSubir) {{
+                setTimeout(function() {{
+                    try {{
                         var banner = pDoc.getElementById("contador_topo");
-                        if (banner) {
-                            banner.scrollIntoView({behavior: "smooth", block: "start"});
-                        }
+                        if (banner) {{
+                            banner.scrollIntoView({{behavior: "smooth", block: "start"}});
+                        }}
                         var container = pDoc.querySelector('[data-testid="stAppViewContainer"]') || pDoc.querySelector('.main') || pDoc.documentElement;
-                        if (container) {
-                            container.scrollTo({top: 0, behavior: "smooth"});
-                        }
-                    } catch(e) {
-                        console.log("Erro scroll topo:", e);
-                    }
-                }, 80);
-            })();
-            </script>'''
-            components.html(_js_topo, height=0)
-        time.sleep(1)
-        st.rerun()
+                        if (container) {{
+                            container.scrollTo({{top: 0, behavior: "smooth"}});
+                        }}
+                    }} catch(e) {{}}
+                }}, 80);
+            }}
+
+            // 4. Limpa timer anterior caso exista
+            if (pWin._treinoTimerInterval) {{
+                clearInterval(pWin._treinoTimerInterval);
+            }}
+
+            // 5. Loop em JavaScript puro preservando 100% a arvore DOM do React
+            pWin._treinoTimerInterval = setInterval(function() {{
+                var agora = Date.now();
+                var segs = Math.ceil((endTime - agora) / 1000);
+                var elNum = pDoc.getElementById("contador_numero");
+                var elBanner = pDoc.getElementById("contador_topo");
+                var elAndamento = pDoc.getElementById("vista_andamento");
+                var elConcluido = pDoc.getElementById("vista_concluido");
+
+                if (segs > 0) {{
+                    if (elNum) {{
+                        elNum.textContent = segs + "s";
+                    }}
+                }} else {{
+                    clearInterval(pWin._treinoTimerInterval);
+                    pWin._treinoTimerInterval = null;
+
+                    if (wakeLock !== null) {{
+                        try {{ wakeLock.release(); }} catch(e) {{}}
+                    }}
+
+                    // Alterna visibilidade sem usar innerHTML (evita erro insertBefore do React)
+                    if (elBanner && elAndamento && elConcluido) {{
+                        elAndamento.style.display = "none";
+                        elConcluido.style.display = "flex";
+                        elBanner.style.background = "#ecfdf5";
+                        elBanner.style.padding = "14px 18px";
+                    }}
+
+                    // Atualiza apenas o no de texto interno (<p>) do botao sem apagar a estrutura do Streamlit
+                    var btns = pDoc.querySelectorAll("button");
+                    btns.forEach(function(b) {{
+                        if (b.textContent && b.textContent.indexOf("⏳") !== -1) {{
+                            var pTag = b.querySelector("p");
+                            if (pTag) {{
+                                pTag.textContent = "✓";
+                            }} else {{
+                                b.textContent = "✓";
+                            }}
+                            b.style.setProperty("background", "linear-gradient(135deg, #10b981 0%, #059669 100%)", "important");
+                            b.style.setProperty("color", "#ffffff", "important");
+                            b.style.setProperty("border", "none", "important");
+                            b.style.setProperty("box-shadow", "0 4px 12px rgba(16, 185, 129, 0.35)", "important");
+                        }}
+                    }});
+
+                    // Dispara vibracao
+                    try {{
+                        var pNav = pWin.navigator || window.navigator;
+                        if (pNav && pNav.vibrate) {{
+                            pNav.vibrate([300, 150, 300, 150, 400]);
+                        }}
+                    }} catch(e) {{}}
+
+                    // Toca bipe sonoro duplo
+                    try {{
+                        var AudioCtx = pWin.AudioContext || pWin.webkitAudioContext || window.AudioContext || window.webkitAudioContext;
+                        if (AudioCtx) {{
+                            var ctx = new AudioCtx();
+                            if (ctx.state === 'suspended') {{ ctx.resume(); }}
+                            function playTone(startTime, freq, duration) {{
+                                var osc = ctx.createOscillator();
+                                var gain = ctx.createGain();
+                                osc.type = "sine";
+                                osc.frequency.setValueAtTime(freq, ctx.currentTime + startTime);
+                                gain.gain.setValueAtTime(0.35, ctx.currentTime + startTime);
+                                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + startTime + duration);
+                                osc.connect(gain);
+                                gain.connect(ctx.destination);
+                                osc.start(ctx.currentTime + startTime);
+                                osc.stop(ctx.currentTime + startTime + duration);
+                            }}
+                            playTone(0.0, 880, 0.18);
+                            playTone(0.22, 1175, 0.3);
+                        }}
+                    }} catch(e) {{}}
+
+                    // Rola suavemente de volta para o exercicio atual
+                    if (alvoScroll) {{
+                        setTimeout(function() {{
+                            var elAlvo = pDoc.getElementById(alvoScroll);
+                            if (elAlvo) {{
+                                elAlvo.scrollIntoView({{behavior: "smooth", block: "center"}});
+                            }}
+                        }}, 250);
+                    }}
+                }}
+            }}, 250);
+        }})();
+        </script>""", height=0)
     else:
-        st.markdown("""<div style="position: sticky; top: 0px; z-index: 9999; margin: -1rem -1rem 1.5rem -1rem; padding: 12px 18px; background: #ecfdf5; border-radius: 0 0 16px 16px; border-bottom: 2px solid #10b981; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); text-align: center;">
-            <span style="font-size: 1.05rem; font-weight: 800; color: #065f46;">🔔 Descanso Concluído! Próxima série!</span>
-        </div>""", unsafe_allow_html=True)
-
-        # Notificacao sonora e tatil robusta na janela pai
-        components.html('''<script>
-        (function() {
-            try {
-                var pNav = window.parent.navigator || window.navigator;
-                // Tenta vibrar tanto no frame atual quanto no parent
-                if (pNav && pNav.vibrate) {
-                    pNav.vibrate([300, 150, 300, 150, 400]);
-                } else if (navigator.vibrate) {
-                    navigator.vibrate([300, 150, 300, 150, 400]);
-                }
-            } catch(e) { console.log("Vibrate error:", e); }
-
-            try {
-                // Toca som sintetizado na janela pai para contornar suspensao do AudioContext
-                var pWin = window.parent || window;
-                var AudioCtx = pWin.AudioContext || pWin.webkitAudioContext || window.AudioContext || window.webkitAudioContext;
-                if (AudioCtx) {
-                    var ctx = new AudioCtx();
-                    if (ctx.state === 'suspended') {
-                        ctx.resume();
-                    }
-                    var osc = ctx.createOscillator();
-                    var gain = ctx.createGain();
-                    osc.type = "sine";
-                    osc.frequency.setValueAtTime(880, ctx.currentTime);
-                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.4);
-                }
-            } catch(e) { console.log("Audio error:", e); }
-        })();
-        </script>''', height=0)
-
-        _alvo = st.session_state.get("alvo_scroll", "")
-        if _alvo:
-            _js = f'<script>setTimeout(function(){{ var el = window.parent.document.getElementById("{_alvo}"); if (el) {{ el.scrollIntoView({{behavior: "smooth", block: "center"}}); }} }}, 300);</script>'
-            components.html(_js, height=0)
-        if "rest_target" in st.session_state:
-            del st.session_state["rest_target"]
+        del st.session_state["rest_target"]
 
 dia_semana_abrev = agora_br.strftime("%A")
 DIAS_PT = {
