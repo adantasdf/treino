@@ -1,3 +1,4 @@
+import base64
 import os
 import streamlit.components.v1 as components
 # -*- coding: utf-8 -*-
@@ -798,6 +799,37 @@ section[data-testid="stSidebar"] button p {
     color: #0f172a !important;
 }
 
+
+
+
+
+
+[data-testid="stHorizontalBlock"] > [data-testid="column"] {
+  min-width: 0 !important;
+  width: 0 !important;
+}
+[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1),
+[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(3) {
+  flex: 0.75 1 0% !important;
+}
+[data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {
+  flex: 1.5 1 0% !important;
+}
+
+
+
+html body div[data-testid="stHorizontalBlock"] > div {
+  min-width: 0 !important;
+  width: 0 !important;
+}
+html body div[data-testid="stHorizontalBlock"] > div:nth-child(1),
+html body div[data-testid="stHorizontalBlock"] > div:nth-child(3) {
+  flex: 0.75 1 0% !important;
+}
+html body div[data-testid="stHorizontalBlock"] > div:nth-child(2) {
+  flex: 1.5 1 0% !important;
+}
+
 </style>"""
 st.markdown(css_code, unsafe_allow_html=True)
 
@@ -807,7 +839,7 @@ ARQ_SESSAO = "/home/ubuntu/treino/.sessao_ativa"
 
 if "usuario_logado" not in st.session_state:
     user_param = st.query_params.get("u")
-    
+
     # Se nao veio pela URL, verifica se existe sessao gravada no servidor
     if not user_param and os.path.exists(ARQ_SESSAO):
         try:
@@ -815,7 +847,7 @@ if "usuario_logado" not in st.session_state:
                 user_param = f_s.read().strip()
         except Exception:
             user_param = None
-            
+
     if user_param:
         conn = get_connection()
         c = conn.cursor()
@@ -950,6 +982,78 @@ if "usuario_logado" not in st.session_state:
     </div>""", unsafe_allow_html=True)
     st.stop()
 
+
+MAPA_IMG_EXERCICIO = {
+    "Agachamento (Livre ou Smith)": "agachamento_livre",
+    "Agachamento Livre ou no Smith": "agachamento_livre",
+    "Mesa Flexora": "mesa_flexora",
+    "Mesa Flexora ou Flexora em Pé": "mesa_flexora",
+    "Mesa Flexora ou Cadeira Flexora": "mesa_flexora",
+    "Supino Reto (Barra ou Halteres)": "supino_reto",
+    "Supino Reto Halteres ou Crossover": "supino_reto",
+    "Puxada Alta no Pulley": "puxada_alta",
+    "Puxada Pulley (Neutra ou Triângulo)": "puxada_alta",
+    "Puxada Alta Aberta no Pulley": "puxada_alta",
+    "Elevação Lateral com Halteres": "elevacao_lateral",
+    "Elevação Lateral na Máquina": "elevacao_lateral",
+    "Elevação Lateral com Pausa": "elevacao_lateral",
+    "Elevação Lateral (Halteres ou Cabo)": "elevacao_lateral",
+    "Elevação Lateral na Polia (Cabo)": "elevacao_lateral_polia",
+    "Tríceps Pulley (Barra reta ou V)": "triceps_pulley",
+    "Tríceps Pulley (Invertida ou V)": "triceps_pulley",
+    "Rosca Direta com Barra": "rosca_direta_barra",
+    "Rosca Direta com Barra W": "rosca_direta_barra",
+    "Panturrilha em Pé (Máquina ou Smith)": "panturrilha_pe",
+    "Panturrilha em Pé": "panturrilha_pe",
+    "Rosca Punho (Antebraço)": "rosca_punho",
+    "RDL ou Stiff": "rdl_stiff",
+    "Leg Press 45°": "leg_press",
+    "Remada Curvada ou Remada Baixa": "remada_curvada",
+    "Remada Baixa (Triângulo) ou Curvada": "remada_curvada",
+    "Crucifixo (Halteres ou Máquina)": "crucifixo",
+    "Rosca Direta com Halteres": "rosca_halteres",
+    "Tríceps Corda na Polia": "triceps_corda",
+    "Tríceps Corda com Abertura": "triceps_corda",
+    "Tríceps Corda + Rosca Martelo": "triceps_corda",
+    "Panturrilha Sentada (Gêmeos)": "panturrilha_sentada",
+    "Panturrilha Sentada": "panturrilha_sentada",
+    "Rosca Inversa (Barra ou Polia)": "rosca_inversa",
+    "Rosca Inversa (Antebraço)": "rosca_inversa",
+    "Descanso Ativo / Caminhada / Mobilidade": "descanso_ativo",
+    "Agachamento Hack": "agachamento_hack",
+    "Cadeira Flexora": "cadeira_flexora",
+    "Supino Inclinado (Halteres ou Barra)": "supino_inclinado",
+    "Supino Inclinado com Halteres": "supino_inclinado",
+    "Remada Serrote com Halter": "remada_serrote",
+    "Cadeira Extensora ou Agachamento Frontal": "cadeira_extensora",
+    "Cadeira Extensora (pausa 1s)": "cadeira_extensora",
+    "Rosca Direta no Cabo (Polia Baixa)": "rosca_cabo",
+    "Cadeira Abdutora": "cadeira_abdutora",
+    "Desenvolvimento com Halteres": "desenvolvimento_halteres",
+    "Agachamento Búlgaro": "agachamento_bulgaro",
+    "Elevação Pélvica (pausa 2s)": "elevacao_pelvica",
+    "Elevação Pélvica na Máquina": "elevacao_pelvica",
+    "Passada / Afundo Caminhando": "passada_afundo",
+    "Glúteo na Polia (Cabo ou Coice)": "gluteo_polia",
+}
+
+@st.cache_data(show_spinner=False)
+def obter_img_base64(nome_exercicio):
+    slug = MAPA_IMG_EXERCICIO.get(nome_exercicio)
+    if not slug:
+        return None
+    # Prioriza gif animado, depois jpg/png
+    for ext, mime in [("gif", "image/gif"), ("jpg", "image/jpeg"), ("png", "image/png")]:
+        caminho = f"/home/ubuntu/treino/img_exercicios/{slug}.{ext}"
+        if os.path.exists(caminho):
+            try:
+                with open(caminho, "rb") as f_img:
+                    b64 = base64.b64encode(f_img.read()).decode("utf-8")
+                return f"data:{mime};base64,{b64}"
+            except Exception:
+                pass
+    return None
+
 USUARIO_ATUAL = st.session_state["usuario_logado"]["username"]
 NOME_ATUAL = st.session_state["usuario_logado"]["nome"]
 
@@ -966,7 +1070,7 @@ FICHAS_ANDRE = {
         ("Rosca Punho (Antebraço)", 3, "12-15", 60),
     ],
     "Treino - Terça-feira": [
-        ("RDL ou Stiff", 3, "8-10", 60),
+        ("Elevação Pélvica na Máquina", 3, "10-12", 60),
         ("Leg Press 45°", 3, "10-12", 60),
         ("Remada Curvada ou Remada Baixa", 3, "8-10", 60),
         ("Crucifixo (Halteres ou Máquina)", 3, "10-12", 60),
@@ -980,7 +1084,7 @@ FICHAS_ANDRE = {
         ("Descanso Ativo / Caminhada / Mobilidade", 1, "30-45 min", 60),
     ],
     "Treino - Quinta-feira": [
-        ("Agachamento Hack ou Búlgaro", 3, "10-12", 60),
+        ("Agachamento Hack", 3, "10-12", 60),
         ("Cadeira Flexora", 3, "10-12", 60),
         ("Supino Inclinado (Halteres ou Barra)", 3, "8-10", 60),
         ("Remada Serrote com Halter", 3, "10-12", 60),
@@ -1066,6 +1170,53 @@ if ficha_banco and ficha_banco in lista_fichas:
 ficha_sel = st.sidebar.selectbox("Ficha Ativa", lista_fichas, index=idx_padrao)
 
 st.sidebar.markdown("<br><hr style='margin: 15px 0; border: none; border-top: 1px solid #e2e8f0;'>", unsafe_allow_html=True)
+
+# GESTOR DE GIFS NA SIDEBAR
+with st.sidebar.expander("⚙️ Gerir Imagens dos Exercícios"):
+    st.markdown("<p style='font-size:0.8rem; color:#64748b; margin-bottom:8px;'>Adicione as suas próprias ilustrações animadas.</p>", unsafe_allow_html=True)
+
+    # Obter todos os exercícios únicos do sistema
+    todos_exercicios = []
+    for f_dict in [FICHAS_ANDRE, FICHAS_RAISSA]:
+        for rotina in f_dict.values():
+            for ex in rotina:
+                todos_exercicios.append(ex[0])
+    todos_exercicios = sorted(list(set(todos_exercicios)))
+
+    ex_upload = st.selectbox("Selecione o Exercício:", todos_exercicios)
+    arquivo_up = st.file_uploader("Escolher ficheiro (GIF/JPG/PNG)", type=["gif", "jpg", "jpeg", "png"])
+
+    if st.button("📤 Guardar Imagem", use_container_width=True):
+        if arquivo_up is not None:
+            slug = MAPA_IMG_EXERCICIO.get(ex_upload)
+            if not slug:
+                # Caso algum exercício não esteja mapeado, criamos um slug seguro automaticamente
+                slug = ex_upload.lower().replace(" ", "_").replace("(", "").replace(")", "").replace("/", "").replace("°", "")
+
+            extensao = arquivo_up.name.split(".")[-1].lower()
+            caminho_salvar = f"/home/ubuntu/treino/img_exercicios/{slug}.{extensao}"
+
+            # Apaga ficheiros antigos com o mesmo slug para evitar conflito
+            import glob
+            for antigo in glob.glob(f"/home/ubuntu/treino/img_exercicios/{slug}.*"):
+                try:
+                    os.remove(antigo)
+                except Exception:
+                    pass
+
+            # Guarda o novo ficheiro
+            try:
+                with open(caminho_salvar, "wb") as f_img:
+                    f_img.write(arquivo_up.getbuffer())
+                # Limpa a cache de imagens do Streamlit para aplicar imediatamente
+                obter_img_base64.clear()
+                st.success(f"Imagem guardada para o exercício!")
+                time.sleep(1)
+                st.rerun()
+            except Exception as e:
+                st.error(f"Erro ao guardar: {e}")
+        else:
+            st.warning("Selecione um ficheiro primeiro.")
 
 st.sidebar.markdown('<div class="sidebar-logout">', unsafe_allow_html=True)
 
@@ -1257,6 +1408,62 @@ if "rest_target" in st.session_state:
     else:
         del st.session_state["rest_target"]
 
+st.markdown("""<style>
+.hevy-header {
+    gap: 10px !important;
+    align-items: center !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 16px !important;
+}
+.hevy-title {
+    font-size: clamp(1.65rem, 6.5vw, 2.2rem) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.04em !important;
+    margin: 0 !important;
+}
+.hevy-subtitle {
+    font-size: 0.88rem !important;
+    line-height: 1.4 !important;
+    color: #64748b !important;
+    margin: 0.45rem 0 0 !important;
+}
+.exercise-card {
+    padding: 14px !important;
+    border-radius: 18px !important;
+    margin-bottom: 10px !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+}
+.exercise-title {
+    margin-top: 5px !important;
+    margin-bottom: 4px !important;
+}
+[data-testid="stMain"] [data-testid="stButton"] > button[kind="secondary"] {
+    min-height: 50px !important;
+    border-radius: 12px !important;
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 1px solid #dbe4ee !important;
+    font-weight: 700 !important;
+}
+[data-testid="stMain"] [data-testid="stButton"] > button[kind="secondary"] p {
+    color: #0f172a !important;
+}
+[data-testid="stMain"] [data-testid="stButton"] > button[kind="primary"] {
+    min-height: 50px !important;
+    border-radius: 12px !important;
+}
+@media (max-width: 640px) {
+    .hevy-header {
+        align-items: flex-start !important;
+    }
+    .exercise-card {
+        padding: 12px !important;
+    }
+}
+</style>""", unsafe_allow_html=True)
+
+titulo_treino = ficha_sel.replace("Treino - ", "")
+
 dia_semana_abrev = agora_br.strftime("%A")
 DIAS_PT = {
     "Monday": "Segunda-feira", "Tuesday": "Terça-feira", "Wednesday": "Quarta-feira",
@@ -1266,8 +1473,8 @@ dia_nome_pt = DIAS_PT.get(dia_semana_abrev, dia_semana_abrev)
 
 st.markdown(f"""<div class="hevy-header">
     <div>
-        <h1 class="hevy-title">{ficha_sel}</h1>
-        <p class="hevy-subtitle">{NOME_ATUAL} &bull; {dia_nome_pt} &bull; {agora_br.strftime('%d/%m/%Y')}</p>
+        <h1 class="hevy-title">{titulo_treino}</h1>
+        <p class="hevy-subtitle">{NOME_ATUAL} &bull; {agora_br.strftime('%d/%m/%Y')}</p>
     </div>
     <span style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 0.8rem; padding: 4px 12px; border-radius: 9999px; border: 1px solid #bbf7d0;">
         HOJE
@@ -1278,6 +1485,14 @@ conn = get_connection()
 dados_sessao = []
 series_feitas_hoje = carregar_series_concluidas(USUARIO_ATUAL, data_sel, ficha_sel)
 
+if "rest_target" not in st.session_state:
+    if st.button("⏱ Iniciar descanso manual · 60s", key="manual_rest_global", use_container_width=True):
+        st.session_state["alvo_scroll"] = ""
+        st.session_state["subir_scroll"] = False
+        st.session_state["rest_target"] = time.time() + 60
+        st.rerun()
+
+
 for item in FICHAS[ficha_sel]:
     nome_ex = item[0]
     num_series = item[1]
@@ -1287,58 +1502,59 @@ for item in FICHAS[ficha_sel]:
     yt_query = urllib.parse.quote(f"execucao {nome_ex}")
     yt_url = f"https://www.youtube.com/results?search_query={yt_query}"
 
-    st.markdown(f"""<div class="exercise-card">
-        <div class="exercise-title">
-            <span>{nome_ex}</span>
-            <a href="{yt_url}" target="_blank" class="video-link">▶ Vídeo</a>
-        </div>
-        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">Meta: {num_series} séries &bull; {alvo_reps} reps &bull; ⏱️ 60s</div>
-        <div class="table-header">
-            <div>SET</div>
-            <div>DESCANSO</div>
-            <div>STATUS</div>
-        </div>
-    </div>""", unsafe_allow_html=True)
+    img_uri = obter_img_base64(nome_ex)
+    if img_uri:
+        # Design limpo: Caixa branca elegante, GIF do exercício ao centro
+        bloco_visual_html = f'<div style="background: #ffffff; border-radius: 16px; margin-bottom: 12px; overflow: hidden; box-shadow: inset 0 0 0 1px #e2e8f0; display: flex; justify-content: center; align-items: center; padding: 12px;"><img src="{img_uri}" alt="{nome_ex}" style="width: 100%; height: auto; max-height: 185px; object-fit: contain; display: block; border-radius: 8px;" /></div><div style="font-size:0.65rem;color:#64748b;text-align:center;margin-top:-8px;margin-bottom:12px;">© Gym visual — https://gymvisual.com/</div>'
+        btn_video_extra = ""
+    else:
+        bloco_visual_html = ""
+        btn_video_extra = f'<a href="{yt_url}" target="_blank" style="color: #3b82f6; font-size: 0.75rem; text-decoration: none; font-weight: 700; padding: 4px 10px; background: #eff6ff; border-radius: 9999px;">▶ Vídeo YouTube</a>'
+
+    html_card = f"""<div class="exercise-card">
+{bloco_visual_html}
+<div class="exercise-title" style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-size: 1.05rem; font-weight: 800;">{nome_ex}</span>
+{btn_video_extra}
+</div>
+<div style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">Meta: {num_series} séries &bull; {alvo_reps} reps &bull; ⏱️ 60s</div>
+</div>"""
+
+    st.markdown(html_card, unsafe_allow_html=True)
 
     for s in range(1, num_series + 1):
         ancora_id = f"card_{s}_" + nome_ex.replace(" ", "_").replace("(", "").replace(")", "").replace("/", "")
         st.markdown(f"<div id='{ancora_id}'></div>", unsafe_allow_html=True)
-        col_set, col_desc, col_done = st.columns([1, 2.5, 2.5])
+        done_key = f"done_{data_sel}_{ficha_sel}_{nome_ex}_{s}"
+        if done_key not in st.session_state:
+            st.session_state[done_key] = (nome_ex, s) in series_feitas_hoje
+        is_done = st.session_state[done_key]
 
-        with col_set:
-            st.markdown(f"<div class='set-badge'>{s}</div>", unsafe_allow_html=True)
+        em_descanso_aqui = (
+            st.session_state.get("alvo_scroll") == ancora_id
+            and "rest_target" in st.session_state
+            and int(st.session_state["rest_target"] - time.time()) > 0
+        )
 
-        with col_desc:
-            label_desc = "⏱️ 60s"
-            if st.button(label_desc, key=f"t_{nome_ex}_{s}"):
+        if em_descanso_aqui:
+            btn_label = f"⏳ Descanso · série {s}"
+            btn_type = "secondary"
+        elif is_done:
+            btn_label = f"✓ Série {s} concluída"
+            btn_type = "primary"
+        else:
+            btn_label = f"Marcar série {s} como concluída"
+            btn_type = "secondary"
+
+        if st.button(btn_label, key=f"btn_done_{nome_ex}_{s}", type=btn_type, use_container_width=True):
+            novo_estado = not is_done
+            st.session_state[done_key] = novo_estado
+            alternar_status_serie(USUARIO_ATUAL, data_sel, ficha_sel, nome_ex, s, novo_estado)
+            if novo_estado:
                 st.session_state["alvo_scroll"] = ancora_id
                 st.session_state["subir_scroll"] = True
                 st.session_state["rest_target"] = time.time() + 60
-                st.rerun()
-
-        with col_done:
-            done_key = f"done_{data_sel}_{ficha_sel}_{nome_ex}_{s}"
-            if done_key not in st.session_state:
-                st.session_state[done_key] = (nome_ex, s) in series_feitas_hoje
-            is_done = st.session_state[done_key]
-            em_descanso_aqui = (st.session_state.get('alvo_scroll') == ancora_id and 'rest_target' in st.session_state and int(st.session_state['rest_target'] - time.time()) > 0)
-            if em_descanso_aqui:
-                btn_label = '⏳'
-                btn_type = 'secondary'
-            else:
-                btn_label = '✓'
-                btn_type = 'primary' if is_done else 'secondary'
-                btn_type = "primary" if is_done else "secondary" 
-
-            if st.button(btn_label, key=f"btn_done_{nome_ex}_{s}", type=btn_type, use_container_width=True):
-                novo_estado = not is_done
-                st.session_state[done_key] = novo_estado
-                alternar_status_serie(USUARIO_ATUAL, data_sel, ficha_sel, nome_ex, s, novo_estado)
-                if novo_estado:
-                    st.session_state["alvo_scroll"] = ancora_id
-                    st.session_state["subir_scroll"] = True
-                    st.session_state["rest_target"] = time.time() + 60
-                st.rerun()
+            st.rerun()
 
         dados_sessao.append((USUARIO_ATUAL, data_sel, ficha_sel, nome_ex, s, 0.0, 0, 1 if is_done else 0))
 
