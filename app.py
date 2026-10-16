@@ -1471,6 +1471,37 @@ DIAS_PT = {
 }
 dia_nome_pt = DIAS_PT.get(dia_semana_abrev, dia_semana_abrev)
 
+st.markdown("""<style>
+[data-testid="stMain"] [data-testid="stVerticalBlock"] {
+    gap: 0.65rem !important;
+}
+[data-testid="stMain"] [data-testid="stButton"] > button[kind="secondary"] {
+    min-height: 46px !important;
+    padding: 0.4rem 0.75rem !important;
+}
+div[class*="st-key-manual_rest_global"] {
+    display: flex !important;
+    justify-content: center !important;
+}
+div[class*="st-key-manual_rest_global"] button {
+    max-width: 340px !important;
+    min-height: 42px !important;
+    margin: 0 auto !important;
+    background: #ffffff !important;
+    color: #475569 !important;
+    border-color: #dbe4ee !important;
+    font-weight: 600 !important;
+}
+</style>""", unsafe_allow_html=True)
+
+st.markdown("""<style>
+div[class*="st-key-manual_rest_global"] button {
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}
+</style>""", unsafe_allow_html=True)
+
 st.markdown(f"""<div class="hevy-header">
     <div>
         <h1 class="hevy-title">{titulo_treino}</h1>
