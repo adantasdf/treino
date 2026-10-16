@@ -1611,19 +1611,11 @@ conn.close()
 st.markdown('<div class="finish-btn">', unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
 if st.button("✓ FINALIZAR TREINO", key="finish_all"):
-    conn = get_connection()
-    c = conn.cursor()
-    salvos = 0
-    for d in dados_sessao:
-        if d[7] == 1:
-            c.execute("""INSERT INTO registro_treino (usuario, data, ficha, exercicio, serie_num, carga, repeticoes, concluido)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", d)
-            salvos += 1
-    conn.commit()
-    conn.close()
+    salvos = sum(1 for d in dados_sessao if d[7] == 1)
     if salvos > 0:
         st.balloons()
-        st.success(f"🔥 Treino salvo! {salvos} séries concluídas.")
+        st.success(f"🔥 Treino finalizado! {salvos} séries concluídas já foram salvas.")
+    else:
         st.warning("Marque ao menos uma série como concluída (✓) antes de finalizar.")
 st.markdown('</div>', unsafe_allow_html=True)
 
