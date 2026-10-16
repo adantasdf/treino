@@ -1252,7 +1252,7 @@ if "rest_target" in st.session_state:
                     <span style="font-weight: 800; color: #f8fafc; font-size: 1.05rem; letter-spacing: 0.3px;">Descanso em Curso</span>
                 </div>
                 <div style="color: #94a3b8; font-size: 0.8rem; margin-top: -4px;">Respire fundo para a próxima série</div>
-                <div style="margin-top: 4px; background: #10b981; color: #022c22; font-family: monospace, sans-serif; font-size: 3.2rem; font-weight: 900; line-height: 1; padding: 8px 32px; border-radius: 9999px; letter-spacing: 2px; box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);">
+                <div id="contador_pill" style="margin-top: 4px; background: #10b981; color: #022c22; font-family: monospace, sans-serif; font-size: 3.2rem; font-weight: 900; line-height: 1; padding: 8px 32px; border-radius: 9999px; letter-spacing: 2px; box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45);">
                     <span id="contador_numero">{restante}s</span>
                 </div>
             </div>
@@ -1269,6 +1269,7 @@ if "rest_target" in st.session_state:
             var alvoScroll = "{_alvo}";
             var deveSubir = {_subir};
             var endTime = Date.now() + (restanteInicial * 1000);
+            var avisoFinalDisparado = false;
             var wakeLock = null;
 
             // 1. Mantem a tela acesa durante o descanso (Wake Lock API)
@@ -1327,6 +1328,22 @@ if "rest_target" in st.session_state:
                 if (segs > 0) {{
                     if (elNum) {{
                         elNum.textContent = segs + "s";
+                    }}
+
+                    if (segs <= 10 && !avisoFinalDisparado) {{
+                        avisoFinalDisparado = true;
+                        var pill = pDoc.getElementById("contador_pill");
+                        if (pill) {{
+                            pill.style.background = "#facc15";
+                            pill.style.color = "#422006";
+                            pill.style.boxShadow = "0 4px 20px rgba(250, 204, 21, 0.75)";
+                        }}
+                        try {{
+                            var navAviso = pWin.navigator || window.navigator;
+                            if (navAviso && typeof navAviso.vibrate === "function") {{
+                                navAviso.vibrate([120, 80, 120]);
+                            }}
+                        }} catch(e) {{}}
                     }}
                 }} else {{
                     clearInterval(pWin._treinoTimerInterval);
